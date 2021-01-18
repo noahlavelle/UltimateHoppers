@@ -1,5 +1,6 @@
 messages:
-  not_player: "&c[UltimateHoppers] This command can only be run by a player"
+  not_player: "§c[UltimateHoppers] This command can only be run by a player"
+  nai: "§c[UltimateHoppers] Please enter the name of an item"
 
 vacuum:
   size: 9

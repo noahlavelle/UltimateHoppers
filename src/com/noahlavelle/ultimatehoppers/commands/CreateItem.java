@@ -1,6 +1,8 @@
 package com.noahlavelle.ultimatehoppers.commands;
 
+import com.noahlavelle.items.ItemManager;
 import com.noahlavelle.ultimatehoppers.Main;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -24,11 +26,25 @@ public class CreateItem implements CommandExecutor {
         // Player Checks
         if (!(commandSender instanceof Player)) {
             commandSender.sendMessage(config.getString("messages.not_player"));
-            System.out.println("not");
             return false;
         }
 
-        System.out.println("running");
+        Player player = (Player) commandSender;
+
+        // Args checks
+        if (strings.length == 0) {
+            player.sendMessage(config.getString("nai"));
+            return false;
+        }
+
+        switch (strings[0]) {
+            case "vacuum":
+                player.getInventory().addItem(ItemManager.vacuumHopper);
+            break;
+            default:
+                player.sendMessage(config.getString("nai"));
+            break;
+        }
 
         return false;
     }
