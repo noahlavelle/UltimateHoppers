@@ -1,0 +1,119 @@
+messages:
+  not_player: "&c[UltimateHoppers] This command can only be run by a player"
+
+vacuum:
+  size: 9
+  title: Vaccum Hopper
+  delay: 1
+  slots:
+    4:
+      item: LIME_STAINED_GLASS_PANE
+      name: Enabled
+      type: general
+      interact: toggle
+      toggle:
+        item: RED_STAINED_GLASS_PANE
+        name: Disabled
+    6:
+      item: Chest
+      name: Vacuum Hopper
+      type: info
+      interact: upgrade
+line:
+  size: 9
+  title: Hopper Line
+  slots:
+    3:
+      item: LIME_STAINED_GLASS_PANE
+      name: Enabled
+      type: general
+      interact: toggle
+      toggle:
+        item: RED_STAINED_GLASS_PANE
+        name: Disabled
+    5:
+      item: CHEST
+      name: Hopper Line
+      type: info
+      interact: upgrade
+    7:
+      item: COMPASS
+      name: Facing
+      type: list
+      interact: switch-list
+      names:
+        - North
+        - East
+        - South
+        - West
+crates:
+  header:
+    4:
+      item: LIME_STAINED_GLASS_PANE
+      name: Enabled
+      type: general
+      interact: toggle
+      toggle:
+        item: RED_STAINED_GLASS_PANE
+        name: Disabled
+    5:
+      item: CHEST
+      name: Hopper Line
+      type: info
+      interact: upgrade
+    6:
+      item: NETHER_STAR
+      name: Sell All
+      type: button
+      interact: sell-all
+    10:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    11:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    12:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    13:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    14:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    15:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    16:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    17:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+    18:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Items
+      type: filler
+      interact: none
+  small:
+    size: 27
+  medium:
+    size: 36
+  huge:
+    size: 45

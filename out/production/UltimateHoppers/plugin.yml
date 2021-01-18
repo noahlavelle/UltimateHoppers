@@ -1,0 +1,13 @@
+name: UltimateHoppers
+main: com.noahlavelle.ultimatehoppers.Main
+version: 1.0
+api-version: 1.16
+author: Noah Lavelle
+
+commands:
+  create:
+    aliases: [ci, createitem, citem]
+    description: Create one of the items added by UltimateHoppers
+    usage: /create <item>
+    permission: uhoppers.createitem
+    permission-message: "&c[UltimateHoppers] You do not have the permission to run that command"
