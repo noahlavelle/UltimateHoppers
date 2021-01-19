@@ -1,8 +1,8 @@
 mysql: # You need to fill in your MySQL database details in here
-  host: "" # Set your host here.
+  host: "localhost" # Set your host here.
   port: "3306" # This is the usual port for MySQL
   database: "ultimatehoppers" # The name of the database you want the plugin to use
-  username: "" # A username to access your database
+  username: "root" # A username to access your database
   password: "" # A password to access your database
 
 
@@ -12,8 +12,17 @@ messages:
 
 vacuum:
   size: 9
-  title: Vaccum Hopper
-  delay: 1
+  title: Vacuum Hopper
+  delay:
+    1: 8
+    2: 6
+    3: 3
+    4: 1
+  radius:
+    1: GRAY 5
+    2: GRAY 10
+    3: GRAY 15
+    4: GRAY 20
   slots:
     4:
       item: LIME_STAINED_GLASS_PANE
@@ -23,11 +32,42 @@ vacuum:
       toggle:
         item: RED_STAINED_GLASS_PANE
         name: Disabled
-    6:
-      item: Chest
+    5:
+      item: CHEST
       name: Vacuum Hopper
       type: info
       interact: upgrade
+      delay:
+        1: 8
+        2: 6
+        3: 3
+        4: 1
+      p1: Speed
+      p2: Radius
+      info:
+        Enabled:
+          1: GREEN Yes
+          2: RED No
+        Filtered:
+          1: GREEN Yes
+          2: RED No
+        Speed:
+          1: GRAY Slow
+          2: GREEN Normal
+          3: GOLD Speedy
+          4: LIGHT_PURPLE Lightning
+        Radius:
+          1: GRAY 5
+          2: GRAY 10
+          3: GRAY 15
+          4: GRAY 20
+        Cost:
+          1: YELLOW $1000
+          2: YELLOW $4000
+          3: YELLOW $9000
+          4: YELLOW $16000
+          5: YELLOW $25000
+          6: YELLOW $36000
 line:
   size: 9
   title: Hopper Line

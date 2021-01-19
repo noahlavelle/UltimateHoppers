@@ -26,7 +26,8 @@ public class BlockPlace implements Listener {
         ItemMeta vacuumMeta = ItemManager.vacuumHopper.getItemMeta();
 
         if (Objects.equals(player.getInventory().getItemInMainHand().getItemMeta(), vacuumMeta) || Objects.equals(player.getInventory().getItemInOffHand().getItemMeta(), vacuumMeta)) {
-            new VacuumHopper(plugin, event.getBlock().getLocation());
+            VacuumHopper vh = new VacuumHopper(plugin, event.getBlock().getLocation());
+            plugin.vacuumHoppers.add(vh);
             plugin.data.createBlock(event.getBlock().getLocation(), player, "vacuum");
             plugin.data.hopperLocations.add(event.getBlock().getLocation());
         }
