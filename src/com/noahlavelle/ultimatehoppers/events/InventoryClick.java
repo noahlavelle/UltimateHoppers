@@ -77,7 +77,7 @@ public class InventoryClick implements Listener {
                         }
 
 
-                        if (P1 + P2 - 1 < plugin.getConfig().getConfigurationSection(clickedType + ".slots." + (event.getRawSlot() + 1) + ".info.Cost").getKeys(false).size()) {
+                        if (P1 + P2 - 1 < plugin.getConfig().getConfigurationSection(clickedType + ".slots." + (event.getRawSlot() + 1) + ".info.Cost").getKeys(false).size() - 1) {
                             if (P1 > P2) {
                                 P2++;
                                 ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName() + " SET P2=" + P2 + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");

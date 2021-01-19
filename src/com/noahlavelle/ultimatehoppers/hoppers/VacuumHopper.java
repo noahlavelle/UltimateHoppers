@@ -54,6 +54,7 @@ public class VacuumHopper implements Listener {
                 if (entity instanceof Item) {
                     ItemStack item = ((Item) entity).getItemStack();
                     ItemStack itemAdd = new ItemStack(item.getType(), 1);
+                    itemAdd.setItemMeta(item.getItemMeta());
 
                     for (ItemStack itemStack : hopper.getInventory()) {
                         if (itemStack == null || (itemStack.getAmount() < itemStack.getMaxStackSize() && itemStack.getMaxStackSize() - itemStack.getAmount() >= item.getAmount() && itemStack.getType() == item.getType())) {

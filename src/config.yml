@@ -11,7 +11,7 @@ messages:
   nai: "§c[UltimateHoppers] Please enter the name of an item"
 
 vacuum:
-  size: 9
+  size: 54
   title: Vacuum Hopper
   delay:
     1: 8
@@ -24,7 +24,7 @@ vacuum:
     3: GRAY 15
     4: GRAY 20
   slots:
-    4:
+    3:
       item: LIME_STAINED_GLASS_PANE
       name: Enabled
       type: general
@@ -32,9 +32,17 @@ vacuum:
       toggle:
         item: RED_STAINED_GLASS_PANE
         name: Disabled
-    5:
-      item: CHEST
-      name: Vacuum Hopper
+    7:
+      item: REDSTONE_BLOCK
+      name: "Filtering: Enabled"
+      type: general
+      interact: toggle
+      toggle:
+        item: RED_TERRACOTTA
+        name: "Filtering: Disabled"
+    14:
+      item: HOPPER
+      name: Info
       type: info
       interact: upgrade
       delay:
@@ -68,6 +76,52 @@ vacuum:
           4: YELLOW $16000
           5: YELLOW $25000
           6: YELLOW $36000
+          7: YELLOW $36000
+    19:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    20:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    21:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    22:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    23:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    24:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    25:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    26:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
+    27:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ↑ Options ↓ Filter Items
+      type: filler
+      interact: none
 line:
   size: 9
   title: Hopper Line

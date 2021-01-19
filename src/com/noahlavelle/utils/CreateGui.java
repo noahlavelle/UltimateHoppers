@@ -106,12 +106,12 @@ public class CreateGui {
             lore.add(ChatColor.RED + "You cannot afford this upgrade");
         }
 
-        if (P1 + P2 - 1 == config.getConfigurationSection(path + ".slots." + key + ".info.Cost").getKeys(false).size()) {
+        if (P1 + P2 - 1 == config.getConfigurationSection(path + ".slots." + key + ".info.Cost").getKeys(false).size() ) {
             lore.remove(lore.size() - 1);
             lore.remove(lore.size() - 1);
             lore.remove(lore.size() - 1);
             lore.add("");
-            lore.add(ChatColor.GREEN + "Hopper max level!");
+            lore.add(ChatColor.GREEN + "Hopper max level");
         }
 
 
