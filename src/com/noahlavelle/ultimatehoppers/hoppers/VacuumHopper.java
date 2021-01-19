@@ -33,6 +33,8 @@ public class VacuumHopper {
         BukkitTask loop = new BukkitRunnable() {
             @Override
             public void run() {
+                if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
+
                 for (Entity entity : location.getWorld().getNearbyEntities(location, 10, 10, 10)) {
                     if (entity instanceof Item) {
                         ItemStack item = ((Item) entity).getItemStack();

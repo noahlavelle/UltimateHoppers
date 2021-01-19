@@ -1,3 +1,11 @@
+mysql: # You need to fill in your MySQL database details in here
+  host: "" # Set your host here.
+  port: "3306" # This is the usual port for MySQL
+  database: "ultimatehoppers" # The name of the database you want the plugin to use
+  username: "" # A username to access your database
+  password: "" # A password to access your database
+
+
 messages:
   not_player: "§c[UltimateHoppers] This command can only be run by a player"
   nai: "§c[UltimateHoppers] Please enter the name of an item"

@@ -1,8 +1,7 @@
 package com.noahlavelle.ultimatehoppers.commands;
 
-import com.noahlavelle.items.ItemManager;
+import com.noahlavelle.ultimatehoppers.items.ItemManager;
 import com.noahlavelle.ultimatehoppers.Main;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;

@@ -1,8 +1,9 @@
-package com.noahlavelle.events;
+package com.noahlavelle.ultimatehoppers.events;
 
-import com.noahlavelle.items.ItemManager;
+import com.noahlavelle.ultimatehoppers.items.ItemManager;
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -26,6 +27,8 @@ public class BlockPlace implements Listener {
 
         if (Objects.equals(player.getInventory().getItemInMainHand().getItemMeta(), vacuumMeta) || Objects.equals(player.getInventory().getItemInOffHand().getItemMeta(), vacuumMeta)) {
             new VacuumHopper(plugin, event.getBlock().getLocation());
+            plugin.data.createBlock(event.getBlock().getLocation(), player, "vacuum");
+            plugin.data.hopperLocations.add(event.getBlock().getLocation());
         }
     }
 }

@@ -1,4 +1,4 @@
-package com.noahlavelle.items;
+package com.noahlavelle.ultimatehoppers.items;
 
 import org.bukkit.Material;
 import org.bukkit.enchantments.Enchantment;
