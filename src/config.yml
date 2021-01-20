@@ -13,43 +13,95 @@ messages:
 vacuum:
   size: 54
   title: Vacuum Hopper
-  delay:
+  delay: # The actual values in ticks that map to each tear of speed
     1: 8
     2: 6
     3: 3
     4: 1
-  radius:
-    1: GRAY 5
-    2: GRAY 10
-    3: GRAY 15
-    4: GRAY 20
-  slots:
+  radius: # The values for each tier of radius
+    1: 5
+    2: 10
+    3: 15
+    4: 20
+  slots: # The GUI slots
+    1:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    2:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
     3:
       item: LIME_STAINED_GLASS_PANE
       name: Enabled
       type: general
       interact: toggle
+      toggle_property: "enable"
       toggle:
         item: RED_STAINED_GLASS_PANE
         name: Disabled
+    4:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    5:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    6:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
     7:
       item: REDSTONE_BLOCK
       name: "Filtering: Enabled"
       type: general
       interact: toggle
+      toggle_property: "filtering"
       toggle:
         item: RED_TERRACOTTA
         name: "Filtering: Disabled"
+    8:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    9:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    10:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    11:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    12:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    13:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
     14:
       item: HOPPER
       name: Info
       type: info
       interact: upgrade
-      delay:
-        1: 8
-        2: 6
-        3: 3
-        4: 1
       p1: Speed
       p2: Radius
       info:
@@ -77,6 +129,26 @@ vacuum:
           5: YELLOW $25000
           6: YELLOW $36000
           7: YELLOW $36000
+    15:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    16:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    17:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    18:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
     19:
       item: BLACK_STAINED_GLASS_PANE
       name: ↑ Options ↓ Filter Items

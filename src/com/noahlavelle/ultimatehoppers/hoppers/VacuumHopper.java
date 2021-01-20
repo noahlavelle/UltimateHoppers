@@ -13,6 +13,8 @@ import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+import java.util.ArrayList;
+
 public class VacuumHopper implements Listener {
 
     @EventHandler
@@ -29,6 +31,9 @@ public class VacuumHopper implements Listener {
 
     public int delay = 8;
     public int radius = 10;
+    public ArrayList<String> filters = new ArrayList<>();
+    public boolean filtering = false;
+    public boolean enabled = true;
 
     public VacuumHopper(Main plugin, Location location) {
         this.plugin = plugin;
@@ -50,17 +55,21 @@ public class VacuumHopper implements Listener {
         task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
 
-            for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-                if (entity instanceof Item) {
-                    ItemStack item = ((Item) entity).getItemStack();
-                    ItemStack itemAdd = new ItemStack(item.getType(), 1);
-                    itemAdd.setItemMeta(item.getItemMeta());
+            if (enabled) {
+                for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
+                    if (entity instanceof Item) {
+                        ItemStack item = ((Item) entity).getItemStack();
+                        ItemStack itemAdd = new ItemStack(item.getType(), 1);
+                        itemAdd.setItemMeta(item.getItemMeta());
 
-                    for (ItemStack itemStack : hopper.getInventory()) {
-                        if (itemStack == null || (itemStack.getAmount() < itemStack.getMaxStackSize() && itemStack.getMaxStackSize() - itemStack.getAmount() >= item.getAmount() && itemStack.getType() == item.getType())) {
-                            item.setAmount(item.getAmount() - 1);
-                            hopper.getInventory().addItem(itemAdd);
-                            return;
+                        if (!filtering || filters.contains(item.getType().toString())) {
+                            for (ItemStack itemStack : hopper.getInventory()) {
+                                if (itemStack == null || (itemStack.getAmount() < itemStack.getMaxStackSize() && itemStack.getMaxStackSize() - itemStack.getAmount() >= item.getAmount() && itemStack.getType() == item.getType())) {
+                                    item.setAmount(item.getAmount() - 1);
+                                    hopper.getInventory().addItem(itemAdd);
+                                    return;
+                                }
+                            }
                         }
                     }
                 }

@@ -1,9 +1,6 @@
 package com.noahlavelle.ultimatehoppers;
 
-import com.noahlavelle.ultimatehoppers.events.BlockBreak;
-import com.noahlavelle.ultimatehoppers.events.BlockPlace;
-import com.noahlavelle.ultimatehoppers.events.InventoryClick;
-import com.noahlavelle.ultimatehoppers.events.PlayerInteract;
+import com.noahlavelle.ultimatehoppers.events.*;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import com.noahlavelle.ultimatehoppers.items.ItemManager;
 import com.noahlavelle.ultimatehoppers.commands.CreateItem;

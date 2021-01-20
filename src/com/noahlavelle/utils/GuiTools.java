@@ -1,5 +1,6 @@
 package com.noahlavelle.utils;
 
+import com.google.gson.Gson;
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import net.milkbowl.vault.economy.Economy;
@@ -18,11 +19,11 @@ import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
-public class CreateGui {
+public class GuiTools {
 
     public static Inventory createGui (Main plugin, String path, Player player) {
         Economy economy = plugin.getEconomy();
@@ -42,6 +43,25 @@ public class CreateGui {
 
             item.setItemMeta(meta);
             inventory.setItem(Integer.parseInt(key) - 1, item);
+        }
+
+        try {
+            Location location = plugin.playerBlockSelected.get(player.getUniqueId());
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
+                    + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+            ResultSet resultSet = ps.executeQuery();
+
+            resultSet.next();
+
+            if (resultSet.getString(9) == null) return inventory;
+
+            for (String itemStackString : resultSet.getString(9).split(Pattern.quote("*"))) {
+                try {
+                    inventory.addItem(new ItemStack(Material.valueOf(itemStackString)));
+                } catch (Exception e) {}
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
 
         return inventory;
@@ -88,8 +108,8 @@ public class CreateGui {
 
             for (VacuumHopper hopper : plugin.vacuumHoppers) {
                 if (hopper.location.equals(plugin.playerBlockSelected.get(player.getUniqueId()))) {
-                    hopper.delay = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".slots." + key + ".delay." + P1)));
-                    hopper.radius = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".slots." + key + ".info.Radius." + P2)).split(" ")[1]);
+                    hopper.delay = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".delay." + P1)));
+                    hopper.radius = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".radius." + P2)));
                     hopper.createHopper();
                 }
             }

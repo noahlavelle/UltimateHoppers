@@ -1,7 +1,7 @@
 package com.noahlavelle.ultimatehoppers.events;
 
 import com.noahlavelle.ultimatehoppers.Main;
-import com.noahlavelle.utils.CreateGui;
+import com.noahlavelle.utils.GuiTools;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -44,7 +44,7 @@ public class PlayerInteract implements Listener {
                             switch (resultSet.getString(5)) {
                                 case "vacuum":
                                     plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
-                                    Inventory inventory = CreateGui.createGui(plugin, "vacuum", player);
+                                    Inventory inventory = GuiTools.createGui(plugin, "vacuum", player);
                                     player.openInventory(inventory);
                                     plugin.playerInventories.put(player.getUniqueId(), inventory);
                                 break;

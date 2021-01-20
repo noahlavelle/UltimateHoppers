@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class SQLGetter {
 
@@ -25,7 +26,8 @@ public class SQLGetter {
     public void createTable() {
         PreparedStatement ps;
         try {
-            ps = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + plugin.getServer().getName() + " (X INT, Y INT, Z INT, WORLD VARCHAR(100), TYPE VARCHAR(100), UUID VARCHAR(100), P1 INT, P2 INT)");
+            ps = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + plugin.getServer().getName()
+                    + " (X INT, Y INT, Z INT, WORLD VARCHAR(100), TYPE VARCHAR(100), UUID VARCHAR(100), P1 INT, P2 INT, INVENTORY TEXT)");
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -69,10 +71,17 @@ public class SQLGetter {
 
             while (resultSet.next()) {
                 Location location = new Location(plugin.getServer().getWorld(resultSet.getString(4)),
-                        Double.parseDouble(resultSet.getString(1)),Double.parseDouble(resultSet.getString(2)), Double.parseDouble(resultSet.getString(3)));
+                        Double.parseDouble(resultSet.getString(1)),
+                        Double.parseDouble(resultSet.getString(2)),
+                        Double.parseDouble(resultSet.getString(3)));
                 VacuumHopper vh = new VacuumHopper(plugin, location);
                 vh.delay = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".delay." + resultSet.getString(7))));
-                vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))).split(" ")[1]);
+                vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))));
+
+                for (String filterItem : resultSet.getString(9).split(Pattern.quote("*"))) {
+                    vh.filters.add(filterItem);
+                }
+
                 plugin.vacuumHoppers.add(vh);
                 hopperLocations.add(location);
 
