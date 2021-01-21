@@ -1,5 +1,6 @@
 package com.noahlavelle.ultimatehoppers.events;
 
+import com.noahlavelle.ultimatehoppers.hoppers.Crate;
 import com.noahlavelle.ultimatehoppers.items.ItemManager;
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
@@ -24,6 +25,7 @@ public class BlockPlace implements Listener {
     public void onBlockPlaced(BlockPlaceEvent event) {
         Player player = event.getPlayer();
         ItemMeta vacuumMeta = ItemManager.vacuumHopper.getItemMeta();
+        ItemMeta crateMeta = ItemManager.crate.getItemMeta();
 
         if (Objects.equals(player.getInventory().getItemInMainHand().getItemMeta(), vacuumMeta) || Objects.equals(player.getInventory().getItemInOffHand().getItemMeta(), vacuumMeta)) {
             VacuumHopper vh = new VacuumHopper(plugin, event.getBlock().getLocation());
@@ -31,5 +33,12 @@ public class BlockPlace implements Listener {
             plugin.data.createBlock(event.getBlock().getLocation(), player, "vacuum");
             plugin.data.hopperLocations.add(event.getBlock().getLocation());
         }
+
+        if (Objects.equals(player.getInventory().getItemInMainHand().getItemMeta(), crateMeta) || Objects.equals(player.getInventory().getItemInOffHand().getItemMeta(), crateMeta)) {
+            Crate crate = new Crate(plugin, event.getBlock().getLocation());
+            plugin.data.createBlock(event.getBlock().getLocation(), player, "crate");
+            plugin.data.hopperLocations.add(event.getBlock().getLocation());
+        }
     }
 }
+

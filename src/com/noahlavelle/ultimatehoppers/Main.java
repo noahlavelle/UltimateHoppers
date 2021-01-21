@@ -1,6 +1,7 @@
 package com.noahlavelle.ultimatehoppers;
 
 import com.noahlavelle.ultimatehoppers.events.*;
+import com.noahlavelle.ultimatehoppers.hoppers.Crate;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import com.noahlavelle.ultimatehoppers.items.ItemManager;
 import com.noahlavelle.ultimatehoppers.commands.CreateItem;
@@ -29,6 +30,7 @@ public class Main extends JavaPlugin {
     public Map<UUID, Location> playerBlockSelected = new HashMap<>();
 
     public ArrayList<VacuumHopper> vacuumHoppers = new ArrayList<>();
+    public ArrayList<Crate> crates = new ArrayList<>();
 
     private static final Logger log = Logger.getLogger("Minecraft");
     private static Economy econ = null;

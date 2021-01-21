@@ -1,15 +1,12 @@
 package com.noahlavelle.ultimatehoppers.events;
 
-import com.google.gson.Gson;
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import com.noahlavelle.utils.GuiTools;
-import jdk.nashorn.internal.parser.JSONParser;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
@@ -136,6 +133,12 @@ public class InventoryClick implements Listener {
                 }
                     System.out.println("*" + item.getType());
                     inventory = inventory.replace("*" + item.getType(), "");
+
+                for (VacuumHopper vacuumHopper : plugin.vacuumHoppers) {
+                    if (location.equals(vacuumHopper.location)) {
+                        vacuumHopper.filters.remove(item.getType().toString());
+                    }
+                }
 
                     try {
                         PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName()

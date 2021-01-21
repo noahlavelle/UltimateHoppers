@@ -12,9 +12,11 @@ import java.util.List;
 public class ItemManager {
 
     public static ItemStack vacuumHopper;
+    public static ItemStack crate;
 
     public static void init() {
         createVacuumHopper();
+        createCrate();
     }
 
     private static void createVacuumHopper() {
@@ -28,5 +30,19 @@ public class ItemManager {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
         vacuumHopper = item;
+    }
+
+    private static void createCrate() {
+        ItemStack item = new ItemStack(Material.HOPPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName("§3Crate");
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Sucks up all items near it and stores them in bulk");
+        lore.add("§7Then you can just click to sell them all!");
+        meta.setLore(lore);
+        meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        crate = item;
     }
 }

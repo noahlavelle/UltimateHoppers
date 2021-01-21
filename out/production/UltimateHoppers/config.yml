@@ -199,51 +199,31 @@ vacuum:
       name: ↑ Options ↓ Filter Items
       type: filler
       interact: none
-line:
-  size: 9
-  title: Hopper Line
+crate:
+  size: 54
+  title: Crate
   slots:
-    3:
-      item: LIME_STAINED_GLASS_PANE
-      name: Enabled
-      type: general
-      interact: toggle
-      toggle:
-        item: RED_STAINED_GLASS_PANE
-        name: Disabled
-    5:
-      item: CHEST
-      name: Hopper Line
-      type: info
-      interact: upgrade
-    7:
-      item: COMPASS
-      name: Facing
-      type: list
-      interact: switch-list
-      names:
-        - North
-        - East
-        - South
-        - West
-crates:
-  header:
     4:
       item: LIME_STAINED_GLASS_PANE
       name: Enabled
-      type: general
+      color: GREEN
+      type: toggle
       interact: toggle
+      toggle_property: enable
       toggle:
         item: RED_STAINED_GLASS_PANE
         name: Disabled
+        color: RED
     5:
       item: CHEST
-      name: Hopper Line
+      name: Info
+      color: YELLOW
       type: info
       interact: upgrade
     6:
       item: NETHER_STAR
       name: Sell All
+      color: YELLOW
       type: button
       interact: sell-all
     10:

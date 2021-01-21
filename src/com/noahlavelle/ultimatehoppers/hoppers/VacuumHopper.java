@@ -2,6 +2,7 @@ package com.noahlavelle.ultimatehoppers.hoppers;
 
 import com.noahlavelle.ultimatehoppers.Main;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Hopper;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -19,15 +21,22 @@ public class VacuumHopper implements Listener {
 
     @EventHandler
     public void onInventoryPickup(InventoryPickupItemEvent event) {
-        if (event.getItem().getLocation().distance(location) <= radius) {
+        if (enabled && event.getItem().getLocation().distance(location) <= radius) {
             event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onEntityPickupItem(EntityPickupItemEvent event) {
+        if (event.getItem().getItemStack().equals(item)) event.setCancelled(true);
     }
 
     public Location location;
     private BukkitTask task = null;
     private Main plugin;
     private Hopper hopper;
+    private ItemStack item;
+    private Chunk chunk;
 
     public int delay = 8;
     public int radius = 10;
@@ -39,6 +48,7 @@ public class VacuumHopper implements Listener {
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.location = location;
+        this.chunk = location.getChunk();
 
         if (location.getWorld().getBlockAt(location).getType() == Material.HOPPER) {
             this.hopper = (Hopper) location.getWorld().getBlockAt(location).getState();
@@ -51,14 +61,17 @@ public class VacuumHopper implements Listener {
     public void createHopper() {
         if (task != null) {
             task.cancel();
+            task = null;
+            item = null;
         }
         task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
 
-            if (enabled) {
+
+            if (enabled && chunk.isLoaded()) {
                 for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
                     if (entity instanceof Item) {
-                        ItemStack item = ((Item) entity).getItemStack();
+                        item = ((Item) entity).getItemStack();
                         ItemStack itemAdd = new ItemStack(item.getType(), 1);
                         itemAdd.setItemMeta(item.getItemMeta());
 

@@ -41,10 +41,17 @@ public class PlayerInteract implements Listener {
 
                         ResultSet resultSet = ps.executeQuery();
                         while (resultSet.next()) {
+                            Inventory inventory;
                             switch (resultSet.getString(5)) {
                                 case "vacuum":
                                     plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
-                                    Inventory inventory = GuiTools.createGui(plugin, "vacuum", player);
+                                    inventory = GuiTools.createGui(plugin, "vacuum", player);
+                                    player.openInventory(inventory);
+                                    plugin.playerInventories.put(player.getUniqueId(), inventory);
+                                break;
+                                case "crate":
+                                    plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
+                                    inventory = GuiTools.createGui(plugin, "crate", player);
                                     player.openInventory(inventory);
                                     plugin.playerInventories.put(player.getUniqueId(), inventory);
                                 break;

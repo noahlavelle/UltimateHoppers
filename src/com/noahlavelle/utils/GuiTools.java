@@ -1,6 +1,5 @@
 package com.noahlavelle.utils;
 
-import com.google.gson.Gson;
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import net.milkbowl.vault.economy.Economy;
@@ -15,13 +14,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import javax.rmi.ssl.SslRMIClientSocketFactory;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.*;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public class GuiTools {
 
@@ -43,7 +40,7 @@ public class GuiTools {
             switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".type"))) {
                 case "info":
                     meta = updateInfo(plugin, config, player, path, key, economy, meta);
-                break;
+                    break;
                 case "toggle":
 
                     VacuumHopper vh = null;
@@ -63,7 +60,7 @@ public class GuiTools {
                                 item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
                                 meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
                             }
-                        break;
+                            break;
                         case "filtering":
                             if (vh.filtering) {
                                 item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
@@ -74,7 +71,7 @@ public class GuiTools {
                             }
                             break;
                     }
-                break;
+                    break;
             }
 
             item.setItemMeta(meta);

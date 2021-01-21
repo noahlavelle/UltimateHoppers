@@ -40,9 +40,13 @@ public class CreateItem implements CommandExecutor {
             case "vacuum":
                 player.getInventory().addItem(ItemManager.vacuumHopper);
             break;
+            case "crate":
+                player.getInventory().addItem(ItemManager.crate);
+            break;
             default:
                 player.sendMessage(config.getString("nai"));
             break;
+
         }
 
         return false;

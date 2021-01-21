@@ -80,8 +80,8 @@ public class SQLGetter {
                 VacuumHopper vh = new VacuumHopper(plugin, location);
                 vh.delay = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".delay." + resultSet.getString(7))));
                 vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))));
-                vh.enabled = Boolean.parseBoolean(resultSet.getString(10));
-                vh.filtering = Boolean.parseBoolean(resultSet.getString(11));
+                vh.enabled = resultSet.getBoolean(10);
+                vh.filtering = resultSet.getBoolean(11);
 
                 for (String filterItem : resultSet.getString(9).split(Pattern.quote("*"))) {
                     vh.filters.add(filterItem);
@@ -92,9 +92,9 @@ public class SQLGetter {
 
                 vh.createHopper();
             }
+
         } catch (SQLException e) {
             e.printStackTrace();
         }
     }
-
 }
