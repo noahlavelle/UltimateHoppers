@@ -157,11 +157,11 @@ public class InventoryClick implements Listener {
                     if (clickedItem.getType() == Material.valueOf(plugin.getConfig().getString(itemClickedPath + ".toggle.item"))) {
                         clickedItem.setType(Material.valueOf(plugin.getConfig().getString(itemClickedPath + ".item")));
                         newMeta = clickedItem.getItemMeta();
-                        newMeta.setDisplayName(ChatColor.RESET + plugin.getConfig().getString(itemClickedPath + ".name"));
+                        newMeta.setDisplayName(ChatColor.valueOf(plugin.getConfig().getString(itemClickedPath + ".color")) + plugin.getConfig().getString(itemClickedPath + ".name"));
                     } else {
                         clickedItem.setType(Material.valueOf(plugin.getConfig().getString(itemClickedPath + ".toggle.item")));
                         newMeta = clickedItem.getItemMeta();
-                        newMeta.setDisplayName(ChatColor.RESET + plugin.getConfig().getString(itemClickedPath + ".toggle.name"));
+                        newMeta.setDisplayName(ChatColor.valueOf(plugin.getConfig().getString(itemClickedPath + ".toggle.color")) + plugin.getConfig().getString(itemClickedPath + ".toggle.name"));
                     }
 
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1F, 1F);
@@ -175,23 +175,43 @@ public class InventoryClick implements Listener {
                             vh = vacuumHopper;
                         }
                     }
+                    PreparedStatement ps = null;
                     switch (Objects.requireNonNull(plugin.getConfig().getString(itemClickedPath + ".toggle_property"))) {
                         case "enable":
                             assert vh != null;
                             if (vh.enabled) vh.enabled = false;
                             else vh.enabled = true;
-                        break;
+
+                            try {
+                                ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName() + " SET ENABLED=" + vh.enabled
+                                        + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
+                            break;
                         case "filtering":
                             assert vh != null;
                             if (vh.filtering) vh.filtering = false;
                             else vh.filtering = true;
+                            try {
+                                ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName() + " SET FILTERING=" + vh.filtering
+                                        + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                            } catch (SQLException e) {
+                                e.printStackTrace();
+                            }
                         break;
+                    }
+
+                    try {
+                        ps.executeUpdate();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
                     }
                 break;
                 case "upgrade":
                     location = plugin.playerBlockSelected.get(player.getUniqueId());
                     try {
-                        PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
+                        ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
                                 + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
                         ResultSet resultSet = ps.executeQuery();
                         resultSet.next();

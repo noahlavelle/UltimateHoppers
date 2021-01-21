@@ -36,13 +36,15 @@ vacuum:
       name: ""
     3:
       item: LIME_STAINED_GLASS_PANE
-      name: Enabled
-      type: general
+      name: "Vacuum: Enabled"
+      color: GREEN
+      type: toggle
       interact: toggle
       toggle_property: "enable"
       toggle:
         item: RED_STAINED_GLASS_PANE
-        name: Disabled
+        name: "Vacuum: Disabled"
+        color: RED
     4:
       item: WHITE_STAINED_GLASS_PANE
       type: filler
@@ -61,12 +63,14 @@ vacuum:
     7:
       item: REDSTONE_BLOCK
       name: "Filtering: Enabled"
-      type: general
+      color: GREEN
+      type: toggle
       interact: toggle
       toggle_property: "filtering"
       toggle:
         item: RED_TERRACOTTA
         name: "Filtering: Disabled"
+        color: RED
     8:
       item: WHITE_STAINED_GLASS_PANE
       type: filler
@@ -100,6 +104,7 @@ vacuum:
     14:
       item: HOPPER
       name: Info
+      color: YELLOW
       type: info
       interact: upgrade
       p1: Speed

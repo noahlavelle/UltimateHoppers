@@ -27,7 +27,7 @@ public class SQLGetter {
         PreparedStatement ps;
         try {
             ps = plugin.SQL.getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS " + plugin.getServer().getName()
-                    + " (X INT, Y INT, Z INT, WORLD VARCHAR(100), TYPE VARCHAR(100), UUID VARCHAR(100), P1 INT, P2 INT, INVENTORY TEXT)");
+                    + " (X INT, Y INT, Z INT, WORLD VARCHAR(100), TYPE VARCHAR(100), UUID VARCHAR(100), P1 INT, P2 INT, INVENTORY TEXT, ENABLED BOOL, FILTERING BOOL)");
             ps.executeUpdate();
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class SQLGetter {
 
     public void createBlock (Location location, Player player, String type) {
         try {
-            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("INSERT IGNORE INTO " + plugin.getServer().getName() + " (X, Y, Z, WORLD, TYPE, UUID, P1, P2) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("INSERT IGNORE INTO " + plugin.getServer().getName() + " (X, Y, Z, WORLD, TYPE, UUID, P1, P2, INVENTORY, ENABLED, FILTERING) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, String.valueOf(location.getBlockX()));
             ps.setString(2, String.valueOf(location.getBlockY()));
             ps.setString(3, String.valueOf(location.getBlockZ()));
@@ -45,6 +45,9 @@ public class SQLGetter {
             ps.setString(6, player.getUniqueId().toString());
             ps.setString(7, String.valueOf(1));
             ps.setString(8, String.valueOf(1));
+            ps.setString(9, "");
+            ps.setString(10, String.valueOf(true));
+            ps.setString(11, String.valueOf(false));
             ps.executeUpdate();
 
             return;
@@ -77,6 +80,8 @@ public class SQLGetter {
                 VacuumHopper vh = new VacuumHopper(plugin, location);
                 vh.delay = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".delay." + resultSet.getString(7))));
                 vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))));
+                vh.enabled = Boolean.parseBoolean(resultSet.getString(10));
+                vh.filtering = Boolean.parseBoolean(resultSet.getString(11));
 
                 for (String filterItem : resultSet.getString(9).split(Pattern.quote("*"))) {
                     vh.filters.add(filterItem);
