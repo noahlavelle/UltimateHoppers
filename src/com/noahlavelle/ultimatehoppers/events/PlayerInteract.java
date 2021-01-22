@@ -8,6 +8,7 @@ import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 
@@ -49,17 +50,34 @@ public class PlayerInteract implements Listener {
                                     player.openInventory(inventory);
                                     plugin.playerInventories.put(player.getUniqueId(), inventory);
                                 break;
-                                case "crate":
-                                    plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
-                                    inventory = GuiTools.createGui(plugin, "crate", player);
-                                    player.openInventory(inventory);
-                                    plugin.playerInventories.put(player.getUniqueId(), inventory);
-                                break;
                             }
                         }
                     } catch (SQLException e) {
                         e.printStackTrace();
                     }
+                }
+            }
+
+            if (player.getInventory().getItemInMainHand().getType() == Material.AIR & block.getType() == Material.CHEST && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+                event.setCancelled(true);
+
+                try {
+                    PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
+                            + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+
+                    ResultSet resultSet = ps.executeQuery();
+                    while (resultSet.next()) {
+                        switch (resultSet.getString(5)) {
+                            case "crate":
+                                plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
+                                Inventory inventory = GuiTools.createGui(plugin, "crate", player);
+                                player.openInventory(inventory);
+                                plugin.playerInventories.put(player.getUniqueId(), inventory);
+                                break;
+                        }
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
             }
         }

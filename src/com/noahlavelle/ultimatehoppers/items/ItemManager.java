@@ -22,6 +22,7 @@ public class ItemManager {
     private static void createVacuumHopper() {
         ItemStack item = new ItemStack(Material.HOPPER, 1);
         ItemMeta meta = item.getItemMeta();
+        assert meta != null;
         meta.setDisplayName("§3Vacuum Hopper");
         List<String> lore = new ArrayList<>();
         lore.add("§7Sucks up all items near it");
@@ -33,8 +34,9 @@ public class ItemManager {
     }
 
     private static void createCrate() {
-        ItemStack item = new ItemStack(Material.HOPPER, 1);
+        ItemStack item = new ItemStack(Material.CHEST, 1);
         ItemMeta meta = item.getItemMeta();
+        assert meta != null;
         meta.setDisplayName("§3Crate");
         List<String> lore = new ArrayList<>();
         lore.add("§7Sucks up all items near it and stores them in bulk");

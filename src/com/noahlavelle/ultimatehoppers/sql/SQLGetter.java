@@ -1,6 +1,7 @@
 package com.noahlavelle.ultimatehoppers.sql;
 
 import com.noahlavelle.ultimatehoppers.Main;
+import com.noahlavelle.ultimatehoppers.hoppers.Crate;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -70,27 +71,39 @@ public class SQLGetter {
         try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName());
             ResultSet resultSet = ps.executeQuery();
-            String path = "vacuum";
 
             while (resultSet.next()) {
+                String path = resultSet.getString(5);
+
                 Location location = new Location(plugin.getServer().getWorld(resultSet.getString(4)),
                         Double.parseDouble(resultSet.getString(1)),
                         Double.parseDouble(resultSet.getString(2)),
                         Double.parseDouble(resultSet.getString(3)));
-                VacuumHopper vh = new VacuumHopper(plugin, location);
-                vh.delay = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".delay." + resultSet.getString(7))));
-                vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))));
-                vh.enabled = resultSet.getBoolean(10);
-                vh.filtering = resultSet.getBoolean(11);
 
-                for (String filterItem : resultSet.getString(9).split(Pattern.quote("*"))) {
-                    vh.filters.add(filterItem);
+                switch (path) {
+                    case "vacuum":
+                        VacuumHopper vh = new VacuumHopper(plugin, location);
+                        vh.delay = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".delay." + resultSet.getString(7))));
+                        vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))));
+                        vh.enabled = resultSet.getBoolean(10);
+                        vh.filtering = resultSet.getBoolean(11);
+
+                        for (String filterItem : resultSet.getString(9).split(Pattern.quote("*"))) {
+                            vh.filters.add(filterItem);
+                        }
+
+                        plugin.vacuumHoppers.add(vh);
+
+                        vh.createHopper();
+                    break;
+                    case "crate":
+                        Crate crate = new Crate(plugin, location);
+                        plugin.crates.add(crate);
+                    break;
+
                 }
 
-                plugin.vacuumHoppers.add(vh);
                 hopperLocations.add(location);
-
-                vh.createHopper();
             }
 
         } catch (SQLException e) {

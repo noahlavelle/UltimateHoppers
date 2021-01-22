@@ -1,6 +1,7 @@
 package com.noahlavelle.utils;
 
 import com.noahlavelle.ultimatehoppers.Main;
+import com.noahlavelle.ultimatehoppers.hoppers.Crate;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
@@ -23,6 +24,27 @@ import java.util.regex.Pattern;
 public class GuiTools {
 
     public static Inventory createGui (Main plugin, String path, Player player) {
+
+
+        VacuumHopper vacuumHopper = null;
+        Crate crate = null;
+
+        Iterator<VacuumHopper> vacuumHopperIterator = plugin.vacuumHoppers.iterator();
+        Iterator<Crate> crateIterator = plugin.crates.iterator();
+        Location playerSelectedLocation = plugin.playerBlockSelected.get(player.getUniqueId());
+
+        while (vacuumHopperIterator.hasNext() || crateIterator.hasNext()) {
+            if (vacuumHopperIterator.hasNext()) {
+                VacuumHopper vacuumHopperNext = vacuumHopperIterator.next();
+                if (vacuumHopperNext.location.equals(playerSelectedLocation)) vacuumHopper = vacuumHopperNext;
+            }
+
+            if (crateIterator.hasNext()) {
+                Crate crateNext = crateIterator.next();
+                if (crateNext.location.equals(playerSelectedLocation)) crate = crateNext;
+            }
+        }
+
         Economy economy = plugin.getEconomy();
         Configuration config = plugin.getConfig();
         Inventory inventory = Bukkit.createInventory(null, Integer.parseInt(config.getString(path + ".size")), config.getString(path + ".title"));
@@ -35,39 +57,50 @@ public class GuiTools {
             if (!Objects.requireNonNull(config.getString(path + ".slots." + key + ".type")).equals("filler")) {
                 color = ChatColor.valueOf(config.getString(path + ".slots." + key + ".color"));
             }
+            assert meta != null;
             meta.setDisplayName(color + config.getString(path + ".slots." + key + ".name"));
 
             switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".type"))) {
                 case "info":
-                    meta = updateInfo(plugin, config, player, path, key, economy, meta);
+                    updateInfo(plugin, config, player, path, key, economy, meta);
                     break;
                 case "toggle":
-
-                    VacuumHopper vh = null;
-
-                    for (VacuumHopper hopper : plugin.vacuumHoppers) {
-                        if (hopper.location.equals(plugin.playerBlockSelected.get(player.getUniqueId()))) {
-                            vh = hopper;
+                    switch (path) {
+                        case "vacuum":
+                        switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".toggle_property"))) {
+                            case "enable":
+                                if (vacuumHopper.enabled) {
+                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
+                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
+                                } else {
+                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
+                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
+                                }
+                                break;
+                            case "filtering":
+                                if (vacuumHopper.filtering) {
+                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
+                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
+                                } else {
+                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
+                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
+                                }
+                                break;
                         }
-                    }
+                        break;
 
-                    switch  (Objects.requireNonNull(config.getString(path + ".slots." + key + ".toggle_property"))) {
-                        case "enable":
-                            if (vh.enabled) {
-                                item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
-                                meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
-                            } else {
-                                item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
-                                meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
-                            }
-                            break;
-                        case "filtering":
-                            if (vh.filtering) {
-                                item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
-                                meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
-                            } else {
-                                item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
-                                meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
+                        case "crate":
+                            switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".toggle_property"))) {
+                                case "enable":
+                                    assert crate != null;
+                                    if (crate.enabled) {
+                                        item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
+                                        meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
+                                    } else {
+                                        item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
+                                        meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
+                                    }
+                                    break;
                             }
                             break;
                     }
