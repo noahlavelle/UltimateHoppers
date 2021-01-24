@@ -200,32 +200,85 @@ vacuum:
       type: filler
       interact: none
 crate:
-  size: 54
   title: Crate
+  storage:
+    1: 125
+    2: 250
+    3: 500
+    4: 750
+  size:
+    1: 27
+    2: 36
+    3: 45
+    4: 54
   slots:
+    1:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    2:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    3:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
     4:
-      item: LIME_STAINED_GLASS_PANE
-      name: Enabled
-      color: GREEN
-      type: toggle
-      interact: toggle
-      toggle_property: enable
-      toggle:
-        item: RED_STAINED_GLASS_PANE
-        name: Disabled
-        color: RED
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
     5:
       item: CHEST
       name: Info
       color: YELLOW
       type: info
       interact: upgrade
+      p1: Storage
+      p2: Size
+      info:
+        Storage:
+          1: GRAY Small
+          2: GREEN Normal
+          3: GOLD Large
+          4: LIGHT_PURPLE Huge
+        Size:
+          1: GRAY Small
+          2: GREEN Normal
+          3: GOLD Large
+          4: LIGHT_PURPLE Huge
+        Cost:
+          1: YELLOW $1000
+          2: YELLOW $4000
+          3: YELLOW $9000
+          4: YELLOW $16000
+          5: YELLOW $25000
+          6: YELLOW $36000
+          7: YELLOW $36000
     6:
-      item: NETHER_STAR
-      name: Sell All
-      color: YELLOW
-      type: button
-      interact: sell-all
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    7:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    8:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    9:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
     10:
       item: BLACK_STAINED_GLASS_PANE
       name: ↑ Options ↓ Items
@@ -271,9 +324,3 @@ crate:
       name: ↑ Options ↓ Items
       type: filler
       interact: none
-  small:
-    size: 27
-  medium:
-    size: 36
-  huge:
-    size: 45

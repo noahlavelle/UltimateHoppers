@@ -1,11 +1,10 @@
 package com.noahlavelle.ultimatehoppers.hoppers;
 
 import com.noahlavelle.ultimatehoppers.Main;
-import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import com.sun.javafx.geom.Vec3d;
+import org.bukkit.*;
 import org.bukkit.block.Hopper;
+import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.event.EventHandler;
@@ -16,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+import java.util.Vector;
 
 public class VacuumHopper implements Listener {
 
@@ -50,25 +50,19 @@ public class VacuumHopper implements Listener {
         this.location = location;
         this.chunk = location.getChunk();
 
-        if (location.getWorld().getBlockAt(location).getType() == Material.HOPPER) {
-            this.hopper = (Hopper) location.getWorld().getBlockAt(location).getState();
-        }
-
-        createHopper();
+        this.hopper = (Hopper) location.getWorld().getBlockAt(location).getState();
 
     }
 
     public void createHopper() {
         if (task != null) {
             task.cancel();
-            task = null;
-            item = null;
         }
         task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
 
-
             if (enabled && chunk.isLoaded()) {
+                location.getWorld().spawnParticle(Particle.PORTAL, new Location(location.getWorld(), location.getX() + 0.5, location.getY() + 1, location.getZ() + 0.5), 10, 0.1, 0.1, 0.1);
                 for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
                     if (entity instanceof Item) {
                         item = ((Item) entity).getItemStack();

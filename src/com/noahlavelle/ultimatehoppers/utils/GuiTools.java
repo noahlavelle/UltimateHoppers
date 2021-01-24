@@ -1,4 +1,4 @@
-package com.noahlavelle.utils;
+package com.noahlavelle.ultimatehoppers.utils;
 
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.Crate;
@@ -47,7 +47,14 @@ public class GuiTools {
 
         Economy economy = plugin.getEconomy();
         Configuration config = plugin.getConfig();
-        Inventory inventory = Bukkit.createInventory(null, Integer.parseInt(config.getString(path + ".size")), config.getString(path + ".title"));
+
+        Inventory inventory;
+
+        if (crate != null) {
+            inventory = Bukkit.createInventory(null, crate.inventorySize, config.getString(path + ".title"));
+        } else {
+            inventory = Bukkit.createInventory(null, Integer.parseInt(config.getString(path + ".size")), config.getString(path + ".title"));
+        }
 
         for (String key : config.getConfigurationSection(path + ".slots").getKeys(false)) {
             ItemStack item = new ItemStack(Material.valueOf(config.getString(path + ".slots" + "." + key + ".item")), 1);
@@ -67,29 +74,31 @@ public class GuiTools {
                 case "toggle":
                     switch (path) {
                         case "vacuum":
-                        switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".toggle_property"))) {
-                            case "enable":
-                                if (vacuumHopper.enabled) {
-                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
-                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
-                                } else {
-                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
-                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
-                                }
-                                break;
-                            case "filtering":
-                                if (vacuumHopper.filtering) {
-                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
-                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
-                                } else {
-                                    item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
-                                    meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
-                                }
-                                break;
-                        }
-                        break;
+                            switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".toggle_property"))) {
+                                case "enable":
+                                    if (vacuumHopper.enabled) {
+                                        item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
+                                        meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
+                                    } else {
+                                        item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
+                                        meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
+                                    }
+                                    break;
+                                case "filtering":
+                                    if (vacuumHopper.filtering) {
+                                        item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".item")));
+                                        meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".color")) + config.getString(path + ".slots." + key + ".name"));
+                                    } else {
+                                        item.setType(Material.valueOf(config.getString(path + ".slots." + key + ".toggle.item")));
+                                        meta.setDisplayName(ChatColor.valueOf(config.getString(path + ".slots." + key + ".toggle.color")) + config.getString(path + ".slots." + key + ".toggle.name"));
+                                    }
+                                    break;
+                            }
+                            break;
 
                         case "crate":
+                            inventory.setMaxStackSize(1);
+
                             switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".toggle_property"))) {
                                 case "enable":
                                     assert crate != null;
@@ -111,23 +120,42 @@ public class GuiTools {
             inventory.setItem(Integer.parseInt(key) - 1, item);
         }
 
-        try {
-            Location location = plugin.playerBlockSelected.get(player.getUniqueId());
-            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
-                    + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
-            ResultSet resultSet = ps.executeQuery();
-
-            resultSet.next();
-
-            if (resultSet.getString(9) == null) return inventory;
-
-            for (String itemStackString : resultSet.getString(9).split(Pattern.quote("*"))) {
+        switch (path) {
+            case "vacuum":
                 try {
-                    inventory.addItem(new ItemStack(Material.valueOf(itemStackString)));
+                    Location location = plugin.playerBlockSelected.get(player.getUniqueId());
+                    PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
+                            + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                    ResultSet resultSet = ps.executeQuery();
+
+                    resultSet.next();
+
+                    if (resultSet.getString(9) == null) return inventory;
+
+                    for (String itemStackString : resultSet.getString(9).split(Pattern.quote("*"))) {
+                        try {
+                            inventory.addItem(new ItemStack(Material.valueOf(itemStackString)));
+                        } catch (Exception e) {}
+                    }
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            break;
+            case "crate":
+                plugin.reloadCratesConfig();
+                try {
+                    for (String key : plugin.cratesConfig.getConfigurationSection(crate.location.toString()).getKeys(false)) {
+                        ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.location.toString() + "." + key);
+                        ItemMeta meta = itemStack.getItemMeta();
+                        List<String> lore = new ArrayList<>();
+                        lore.add(ChatColor.GRAY + "Amount: " + itemStack.getAmount());
+                        meta.setLore(lore);
+                        itemStack.setItemMeta(meta);
+                        itemStack.setAmount(1);
+                        inventory.setItem(plugin.getConfig().getConfigurationSection("crate.slots").getKeys(false).size() + Integer.parseInt(key), itemStack);
+                    }
                 } catch (Exception e) {}
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+            break;
         }
 
         return inventory;
@@ -172,12 +200,25 @@ public class GuiTools {
                 text = configurationSection.get(String.valueOf(P1 + P2 - 1)).toString().split(" ")[1];
             }
 
-            for (VacuumHopper hopper : plugin.vacuumHoppers) {
-                if (hopper.location.equals(plugin.playerBlockSelected.get(player.getUniqueId()))) {
-                    hopper.delay = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".delay." + P1)));
-                    hopper.radius = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".radius." + P2)));
-                    hopper.createHopper();
-                }
+            switch (path) {
+                case "vacuum":
+                    for (VacuumHopper hopper : plugin.vacuumHoppers) {
+                        if (hopper.location.equals(plugin.playerBlockSelected.get(player.getUniqueId()))) {
+                            hopper.delay = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".delay." + P1)));
+                            hopper.radius = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".radius." + P2)));
+                            hopper.createHopper();
+                        }
+                    }
+                break;
+                case "crate":
+                    for (Crate crate : plugin.crates) {
+                        if (crate.location.equals(plugin.playerBlockSelected.get(player.getUniqueId()))) {
+                            crate.storage = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".storage." + P1)));
+                            crate.inventorySize = Integer.parseInt(Objects.requireNonNull(config.getString(path + ".size." + P2)));
+                            player.closeInventory();
+                        }
+                    }
+                break;
             }
 
             lore.add(ChatColor.GRAY + infoKey + ": " + color + text);

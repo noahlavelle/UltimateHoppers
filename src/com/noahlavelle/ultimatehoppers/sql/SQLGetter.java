@@ -80,6 +80,8 @@ public class SQLGetter {
                         Double.parseDouble(resultSet.getString(2)),
                         Double.parseDouble(resultSet.getString(3)));
 
+                plugin.hopperLocations.add(location);
+
                 switch (path) {
                     case "vacuum":
                         VacuumHopper vh = new VacuumHopper(plugin, location);
@@ -87,17 +89,17 @@ public class SQLGetter {
                         vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))));
                         vh.enabled = resultSet.getBoolean(10);
                         vh.filtering = resultSet.getBoolean(11);
+                        vh.createHopper();
 
                         for (String filterItem : resultSet.getString(9).split(Pattern.quote("*"))) {
                             vh.filters.add(filterItem);
                         }
 
                         plugin.vacuumHoppers.add(vh);
-
-                        vh.createHopper();
                     break;
                     case "crate":
                         Crate crate = new Crate(plugin, location);
+                        crate.createCrate();
                         plugin.crates.add(crate);
                     break;
 

@@ -1,8 +1,10 @@
 package com.noahlavelle.ultimatehoppers.events;
 
 import com.noahlavelle.ultimatehoppers.Main;
+import com.noahlavelle.ultimatehoppers.hoppers.Crate;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
-import com.noahlavelle.utils.GuiTools;
+import com.noahlavelle.ultimatehoppers.utils.GuiTools;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -13,18 +15,20 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 public class InventoryClick implements Listener {
 
     private Main plugin;
+    Economy economy;
 
     public InventoryClick (Main plugin) {
         this.plugin = plugin;
+        this.economy = plugin.getEconomy();
     }
 
     @EventHandler
@@ -46,6 +50,26 @@ public class InventoryClick implements Listener {
     public void onInventoryClick (InventoryClickEvent event) {
         Player player = (Player) event.getWhoClicked();
 
+        if (event.getInventory() != plugin.playerInventories.get(player.getUniqueId())) return;
+
+        Iterator<VacuumHopper> vacuumHopperIterator = plugin.vacuumHoppers.iterator();
+        Iterator<Crate> crateIterator = plugin.crates.iterator();
+        Location playerSelectedLocation = plugin.playerBlockSelected.get(player.getUniqueId());
+        VacuumHopper vacuumHopper = null;
+        Crate crate = null;
+
+        while (vacuumHopperIterator.hasNext() || crateIterator.hasNext()) {
+            if (vacuumHopperIterator.hasNext()) {
+                VacuumHopper vacuumHopperNext = vacuumHopperIterator.next();
+                if (vacuumHopperNext.location.equals(playerSelectedLocation)) vacuumHopper = vacuumHopperNext;
+            }
+
+            if (crateIterator.hasNext()) {
+                Crate crateNext = crateIterator.next();
+                if (crateNext.location.equals(playerSelectedLocation)) crate = crateNext;
+            }
+        }
+
         if (plugin.playerInventories.containsKey(player.getUniqueId())) {
             if (event.isShiftClick()) {
                 event.setCancelled(true);
@@ -53,106 +77,145 @@ public class InventoryClick implements Listener {
             }
         }
 
+        String itemClickedPath = "";
+        String clickedType = "";
+        ItemStack clickedItem = event.getInventory().getItem(event.getRawSlot());
+
         if (plugin.playerInventories.get(player.getUniqueId()) == event.getClickedInventory()) {
-            if (event.getInventory().getItem(event.getRawSlot()) == null) {
-                Bukkit.getScheduler().runTask(plugin, () -> {
-                    ItemStack itemStack = event.getClickedInventory().getItem(event.getRawSlot());
+            switch (event.getView().getTitle().toLowerCase()) {
+                case "vacuum hopper":
+                    if (event.getInventory().getItem(event.getRawSlot()) == null) {
+                        VacuumHopper finalVacuumHopper = vacuumHopper;
+                        Bukkit.getScheduler().runTask(plugin, () -> {
+                            ItemStack itemStack = event.getClickedInventory().getItem(event.getRawSlot());
 
-                    event.getClickedInventory().setItem(event.getRawSlot(), new ItemStack(itemStack.getType()));
-                    player.getInventory().addItem(itemStack);
+                            event.getClickedInventory().setItem(event.getRawSlot(), new ItemStack(itemStack.getType()));
+                            player.getInventory().addItem(itemStack);
 
-                    if (itemStack != null) {
-                        ResultSet resultSet;
-                        Location location = plugin.playerBlockSelected.get(player.getUniqueId());
-                        String inventory = null;
-                        try {
-                            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
-                                    + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
-                            resultSet = ps.executeQuery();
-                            resultSet.next();
-                            inventory = resultSet.getString(9);
+                            if (itemStack != null) {
+                                ResultSet resultSet;
+                                Location location = plugin.playerBlockSelected.get(player.getUniqueId());
+                                String inventory = null;
+                                try {
+                                    PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
+                                            + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                                    resultSet = ps.executeQuery();
+                                    resultSet.next();
+                                    inventory = resultSet.getString(9);
+                                } catch (SQLException e) {
+                                    e.printStackTrace();
+                                }
+                                if (inventory == null) inventory = "";
+                                String newInventory = inventory + "*" + itemStack.getType();
+                                player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1F, 1F);
+                                finalVacuumHopper.filters.add(itemStack.getType().toString());
+
+                                try {
+                                    PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName()
+                                            + " SET INVENTORY=? WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                                    ps.setString(1, newInventory);
+                                    ps.executeUpdate();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+
+                        return;
+                    }
+
+                    itemClickedPath = "vacuum.slots." + (event.getRawSlot() + 1);
+                    clickedType = "vacuum";
+                        if (plugin.getConfig().getString(itemClickedPath + ".interact") == null) {
+                            ItemStack item = event.getClickedInventory().getItem(event.getRawSlot());
+                            for (ItemStack itemStack : event.getClickedInventory().getContents()) {
+                                if (itemStack != null && itemStack.equals(item)) {
+                                    event.getClickedInventory().remove(itemStack);
+                                }
+                            }
+
+                            ResultSet resultSet = null;
+                            Location location = plugin.playerBlockSelected.get(player.getUniqueId());
+                            String inventory = null;
+
+                            try {
+                                PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
+                                        + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                                resultSet = ps.executeQuery();
+                                resultSet.next();
+                                inventory = resultSet.getString(9);
+
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
-                        if (inventory == null) inventory = "";
-                        String newInventory = inventory + "*" + itemStack.getType();
-                        for (VacuumHopper vacuumHopper : plugin.vacuumHoppers) {
-                            if (location.equals(vacuumHopper.location)) {
-                                vacuumHopper.filters.add(itemStack.getType().toString());
+                            inventory = inventory.replace("*" + item.getType(), "");
+
+                            vacuumHopper.filters.remove(item.getType().toString());
+
+                            try {
+                                PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName()
+                                        + " SET INVENTORY=? WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                                ps.setString(1, inventory);
+                                ps.executeUpdate();
+                                ps.executeUpdate();
+                            } catch (SQLException e) {
+                                e.printStackTrace();
                             }
+
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                            return;
                         }
 
-                        try {
-                            PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName()
-                                    + " SET INVENTORY=? WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
-                            ps.setString(1, newInventory);
-                            ps.executeUpdate();
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                break;
+                case "crate":
+                    if (plugin.getConfig().getString("crate.slots." + (event.getRawSlot() + 1) + ".interact") == null) {
+                        if (event.getInventory().getItem(event.getRawSlot()) == null) {
+                            event.setCancelled(true);
+                            return;
+                        }
+                        if (event.getClick().isLeftClick()) {
+                            plugin.reloadCratesConfig();
+
+                            int key = event.getRawSlot() - (plugin.getConfig().getConfigurationSection("crate.slots").getKeys(false).size());
+                            ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.location.toString() + "." + key);
+
+                            plugin.cratesConfig.set(crate.location.toString() + "." + key, null);
+
+                            ItemStack itemOverflow = player.getInventory().addItem(itemStack).get(0);
+
+                            if (itemOverflow == null) {
+                                event.getInventory().getItem(event.getRawSlot()).setAmount(0);
+                            } else {
+                                ItemMeta itemMeta = event.getInventory().getItem(event.getRawSlot()).getItemMeta();
+                                List<String> lore = itemMeta.getLore();
+                                lore.remove(lore.size() - 1);
+                                lore.add(ChatColor.GRAY + "Amount: " + itemOverflow.getAmount());
+                                itemMeta.setLore(lore);
+                                event.getInventory().getItem(event.getRawSlot()).setItemMeta(itemMeta);
+
+                                plugin.cratesConfig.set(crate.location + "." + plugin.cratesConfig.getConfigurationSection(crate.location.toString()).getKeys(false).size(), itemOverflow);
+                            }
+
+                            try {
+                                plugin.cratesConfig.save(plugin.cratesConfigFile);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+
+                            itemStack.setAmount(0);
+                        } else if (event.getClick().isRightClick()) {
                         }
                     }
-                });
 
-
-                return;
-            }
-            event.setCancelled(true);
-
-            String itemClickedPath = "";
-            String clickedType = "";
-            ItemStack clickedItem = event.getInventory().getItem(event.getRawSlot());
-
-            switch (event.getView().getTitle().toLowerCase()) {
-                case "vacuum hopper":
-                    itemClickedPath = "vacuum.slots." + (event.getRawSlot() + 1);
-                    clickedType = "vacuum";
+                    itemClickedPath = "crate.slots." + (event.getRawSlot() + 1);
+                    clickedType = "crate";
                 break;
             }
 
-            if (plugin.getConfig().getString(itemClickedPath + ".interact") == null) {
-                ItemStack item = event.getClickedInventory().getItem(event.getRawSlot());
-                for (ItemStack itemStack : event.getClickedInventory().getContents()) {
-                    if (itemStack != null && itemStack.equals(item)) {
-                        event.getClickedInventory().remove(itemStack);
-                    }
-                }
+            event.setCancelled(true);
 
-                ResultSet resultSet = null;
-                Location location = plugin.playerBlockSelected.get(player.getUniqueId());
-                String inventory = null;
-
-                try {
-                    PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
-                            + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
-                    resultSet = ps.executeQuery();
-                    resultSet.next();
-                    inventory = resultSet.getString(9);
-
-                } catch (SQLException e) {
-                    e.printStackTrace();
-                }
-                    System.out.println("*" + item.getType());
-                    inventory = inventory.replace("*" + item.getType(), "");
-
-                for (VacuumHopper vacuumHopper : plugin.vacuumHoppers) {
-                    if (location.equals(vacuumHopper.location)) {
-                        vacuumHopper.filters.remove(item.getType().toString());
-                    }
-                }
-
-                    try {
-                        PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName()
-                                + " SET INVENTORY=? WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
-                        ps.setString(1, inventory);
-                        ps.executeUpdate();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
-                return;
-            }
-
+            if (plugin.getConfig().getString(itemClickedPath + ".interact") == null) return;
             switch (Objects.requireNonNull(plugin.getConfig().getString(itemClickedPath + ".interact"))) {
                 case "toggle":
                     ItemMeta newMeta;
@@ -170,45 +233,43 @@ public class InventoryClick implements Listener {
                     player.playSound(player.getLocation(), Sound.UI_BUTTON_CLICK, 1F, 1F);
                     clickedItem.setItemMeta(newMeta);
 
-                    VacuumHopper vh = null;
                     Location location = plugin.playerBlockSelected.get(player.getUniqueId());
 
-                    for (VacuumHopper vacuumHopper : plugin.vacuumHoppers) {
-                        if (location.equals(vacuumHopper.location)) {
-                            vh = vacuumHopper;
-                        }
-                    }
                     PreparedStatement ps = null;
-                    switch (Objects.requireNonNull(plugin.getConfig().getString(itemClickedPath + ".toggle_property"))) {
-                        case "enable":
-                            assert vh != null;
-                            if (vh.enabled) vh.enabled = false;
-                            else vh.enabled = true;
+                    switch (clickedType) {
+                        case "vacuum":
+                            switch (Objects.requireNonNull(plugin.getConfig().getString(itemClickedPath + ".toggle_property"))) {
+                                case "enable":
+                                    assert vacuumHopper != null;
+                                    if (vacuumHopper.enabled) vacuumHopper.enabled = false;
+                                    else vacuumHopper.enabled = true;
+
+                                    try {
+                                        ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName() + " SET ENABLED=" + vacuumHopper.enabled
+                                                + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                                case "filtering":
+                                    assert vacuumHopper != null;
+                                    if (vacuumHopper.filtering) vacuumHopper.filtering = false;
+                                    else vacuumHopper.filtering = true;
+                                    try {
+                                        ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName() + " SET FILTERING=" + vacuumHopper.filtering
+                                                + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                                    } catch (SQLException e) {
+                                        e.printStackTrace();
+                                    }
+                                    break;
+                            }
 
                             try {
-                                ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName() + " SET ENABLED=" + vh.enabled
-                                        + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
-                            } catch (SQLException e) {
-                                e.printStackTrace();
-                            }
-                            break;
-                        case "filtering":
-                            assert vh != null;
-                            if (vh.filtering) vh.filtering = false;
-                            else vh.filtering = true;
-                            try {
-                                ps = plugin.SQL.getConnection().prepareStatement("UPDATE " + plugin.getServer().getName() + " SET FILTERING=" + vh.filtering
-                                        + " WHERE (X=" + location.getBlockX() + " AND Y=" + location.getBlockY() + " AND Z=" + location.getBlockZ() + ")");
+                                ps.executeUpdate();
                             } catch (SQLException e) {
                                 e.printStackTrace();
                             }
                         break;
-                    }
-
-                    try {
-                        ps.executeUpdate();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
                     }
                 break;
                 case "upgrade":
@@ -224,7 +285,7 @@ public class InventoryClick implements Listener {
 
                         int cost = Integer.parseInt(plugin.getConfig().getConfigurationSection(clickedType + ".slots." +
                                 (event.getRawSlot() + 1) + ".info.Cost").get(String.valueOf(P1 + P2 - 1)).toString().split(" ")[1].substring(1));
-                        if (cost > plugin.getEconomy().getBalance(player)) {
+                        if (cost > economy.getBalance(player)) {
                             player.playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 1F, 1F);
                             return;
                         }
@@ -246,8 +307,8 @@ public class InventoryClick implements Listener {
                         }
 
                         player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
-                        plugin.getEconomy().withdrawPlayer(player, cost);
-                        clickedItem.setItemMeta(GuiTools.updateInfo(plugin, plugin.getConfig(), player, clickedType, String.valueOf(event.getRawSlot() + 1), plugin.getEconomy(), clickedItem.getItemMeta()));
+                        economy.withdrawPlayer(player, cost);
+                        clickedItem.setItemMeta(GuiTools.updateInfo(plugin, plugin.getConfig(), player, clickedType, String.valueOf(event.getRawSlot() + 1), economy, clickedItem.getItemMeta()));
 
                     } catch (SQLException e) {
                         e.printStackTrace();

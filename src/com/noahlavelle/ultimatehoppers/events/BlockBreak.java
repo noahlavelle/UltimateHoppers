@@ -1,14 +1,18 @@
 package com.noahlavelle.ultimatehoppers.events;
 
 import com.noahlavelle.ultimatehoppers.Main;
+import com.noahlavelle.ultimatehoppers.hoppers.Crate;
 import com.noahlavelle.ultimatehoppers.items.ItemManager;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 
+import java.io.IOException;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -38,8 +42,22 @@ public class BlockBreak implements Listener {
                         location.getWorld().dropItemNaturally(location, ItemManager.vacuumHopper);
                     break;
                     case "crate":
+                        if (plugin.cratesConfig.getString(location.toString() + ".0") != null) {
+                            event.setCancelled(true);
+                            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1F, 1F);
+                            player.sendMessage(ChatColor.RED + "You cannot break a crate with items in");
+                            return;
+                        }
+
                         location.getWorld().dropItemNaturally(location, ItemManager.crate);
-                    break;
+                        plugin.cratesConfig.set(location.toString(), null);
+                        try {
+                            plugin.cratesConfig.save(plugin.cratesConfigFile);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+
+                        break;
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
