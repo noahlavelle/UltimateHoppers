@@ -7,10 +7,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 
 import java.io.IOException;
 import java.sql.PreparedStatement;
@@ -26,8 +28,21 @@ public class BlockBreak implements Listener {
     }
 
     @EventHandler
+    public void onEntityExplode (EntityExplodeEvent event) {
+        for (Location location : plugin.hopperLocations) {
+            Block block = location.getWorld().getBlockAt(location);
+            event.blockList().remove(block);
+        }
+    }
+
+    @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
+        Crate crate = null;
+
+        for (Crate c : plugin.crates) {
+            if (c.location.equals(event.getBlock().getLocation())) crate = c;
+        }
 
         if (plugin.data.hopperLocations.contains(event.getBlock().getLocation())) {
             try {
@@ -42,7 +57,7 @@ public class BlockBreak implements Listener {
                         location.getWorld().dropItemNaturally(location, ItemManager.vacuumHopper);
                     break;
                     case "crate":
-                        if (plugin.cratesConfig.getString(location.toString() + ".0") != null) {
+                        if (plugin.cratesConfig.getConfigurationSection(crate.key).getKeys(false).size() != 0) {
                             event.setCancelled(true);
                             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1F, 1F);
                             player.sendMessage(ChatColor.RED + "You cannot break a crate with items in");
@@ -50,7 +65,7 @@ public class BlockBreak implements Listener {
                         }
 
                         location.getWorld().dropItemNaturally(location, ItemManager.crate);
-                        plugin.cratesConfig.set(location.toString(), null);
+                        plugin.cratesConfig.set(crate.key, null);
                         try {
                             plugin.cratesConfig.save(plugin.cratesConfigFile);
                         } catch (IOException e) {

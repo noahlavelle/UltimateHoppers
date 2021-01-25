@@ -144,8 +144,8 @@ public class GuiTools {
             case "crate":
                 plugin.reloadCratesConfig();
                 try {
-                    for (String key : plugin.cratesConfig.getConfigurationSection(crate.location.toString()).getKeys(false)) {
-                        ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.location.toString() + "." + key);
+                    for (String key : plugin.cratesConfig.getConfigurationSection(crate.key).getKeys(false)) {
+                        ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.key + "." + key);
                         ItemMeta meta = itemStack.getItemMeta();
                         List<String> lore = new ArrayList<>();
                         lore.add(ChatColor.GRAY + "Amount: " + itemStack.getAmount());

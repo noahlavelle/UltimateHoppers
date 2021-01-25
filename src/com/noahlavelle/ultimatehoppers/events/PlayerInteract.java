@@ -28,7 +28,7 @@ public class PlayerInteract implements Listener {
     }
 
     @EventHandler
-    public void onBlockPlaced(PlayerInteractEvent event) {
+    public void onPlayerInteract (PlayerInteractEvent event) {
 
         Player player = event.getPlayer();
 
@@ -37,7 +37,8 @@ public class PlayerInteract implements Listener {
         if (block != null) {
             Location location = block.getLocation();
 
-            if (player.isSneaking() && player.getInventory().getItemInMainHand().getType() == Material.AIR && block.getType() == Material.HOPPER && plugin.data.hopperLocations.contains(location)) {
+            if (player.isSneaking() && player.getInventory().getItemInMainHand().getType() == Material.AIR &&
+                    block.getType() == Material.HOPPER && plugin.data.hopperLocations.contains(location)) {
                 event.setCancelled(true);
                 try {
                     PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("SELECT * FROM " + plugin.getServer().getName()
@@ -46,13 +47,11 @@ public class PlayerInteract implements Listener {
                     ResultSet resultSet = ps.executeQuery();
                     while (resultSet.next()) {
                         Inventory inventory;
-                        switch (resultSet.getString(5)) {
-                            case "vacuum":
-                                plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
-                                inventory = GuiTools.createGui(plugin, "vacuum", player);
-                                player.openInventory(inventory);
-                                plugin.playerInventories.put(player.getUniqueId(), inventory);
-                            break;
+                        if ("vacuum".equals(resultSet.getString(5))) {
+                            plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
+                            inventory = GuiTools.createGui(plugin, "vacuum", player);
+                            player.openInventory(inventory);
+                            plugin.playerInventories.put(player.getUniqueId(), inventory);
                         }
                     }
                 } catch (SQLException e) {
@@ -60,7 +59,9 @@ public class PlayerInteract implements Listener {
                 }
             }
 
-            if (player.getInventory().getItemInMainHand().getType() == Material.AIR & block.getType() == Material.CHEST && event.getAction().equals(Action.RIGHT_CLICK_BLOCK) && plugin.data.hopperLocations.contains(location)) {
+            if ( (player.isSneaking() && player.getInventory().getItemInMainHand().getType() == Material.AIR || !player.isSneaking())
+                    && block.getType() == Material.CHEST && event.getAction().equals(Action.RIGHT_CLICK_BLOCK)
+                    && plugin.data.hopperLocations.contains(location)) {
                 event.setCancelled(true);
 
                 try {
@@ -69,14 +70,12 @@ public class PlayerInteract implements Listener {
 
                     ResultSet resultSet = ps.executeQuery();
                     while (resultSet.next()) {
-                        switch (resultSet.getString(5)) {
-                            case "crate":
-                                plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
-                                Inventory inventory = GuiTools.createGui(plugin, "crate", player);
-                                player.updateInventory();
-                                player.openInventory(inventory);
-                                plugin.playerInventories.put(player.getUniqueId(), inventory);
-                                break;
+                        if ("crate".equals(resultSet.getString(5))) {
+                            plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
+                            Inventory inventory = GuiTools.createGui(plugin, "crate", player);
+                            player.updateInventory();
+                            player.openInventory(inventory);
+                            plugin.playerInventories.put(player.getUniqueId(), inventory);
                         }
                     }
                 } catch (SQLException e) {

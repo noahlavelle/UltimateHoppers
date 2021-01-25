@@ -21,10 +21,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Random;
 
 public class BlockPlace implements Listener {
 
     private Main plugin;
+    private Random random = new Random(System.currentTimeMillis());
 
     public BlockPlace (Main plugin) {
         this.plugin = plugin;
@@ -42,14 +44,7 @@ public class BlockPlace implements Listener {
             VacuumHopper vh = new VacuumHopper(plugin, event.getBlock().getLocation());
             vh.createHopper();
             plugin.vacuumHoppers.add(vh);
-            plugin.data.createBlock(event.getBlock().getLocation(), player, "vacuum");
-            plugin.data.hopperLocations.add(event.getBlock().getLocation());
-        }
-
-        if (Objects.equals(player.getInventory().getItemInMainHand().getItemMeta(), crateMeta) || Objects.equals(player.getInventory().getItemInOffHand().getItemMeta(), crateMeta)) {
-            Crate crate = new Crate(plugin, event.getBlock().getLocation());
-            plugin.crates.add(crate);
-            plugin.data.createBlock(event.getBlock().getLocation(), player, "crate");
+            plugin.data.createBlock(event.getBlock().getLocation(), player, "vacuum", "");
             plugin.data.hopperLocations.add(event.getBlock().getLocation());
         }
 
@@ -65,6 +60,35 @@ public class BlockPlace implements Listener {
                 }
             }
         }
+
+        if (Objects.equals(player.getInventory().getItemInMainHand().getItemMeta(), crateMeta) || Objects.equals(player.getInventory().getItemInOffHand().getItemMeta(), crateMeta)) {
+            Crate crate = new Crate(plugin, event.getBlock().getLocation());
+            String key = generateRandomKey();
+            crate.key = key;
+            plugin.crates.add(crate);
+            plugin.data.createBlock(event.getBlock().getLocation(), player, "crate", key);
+            plugin.data.hopperLocations.add(event.getBlock().getLocation());
+
+            plugin.reloadCratesConfig();
+            plugin.cratesConfig.createSection(key);
+            plugin.cratesConfig.save(plugin.cratesConfigFile);
+        }
+    }
+
+    public String generateRandomKey() {
+        String key = String.valueOf(random.nextInt(99999));
+
+        try {
+            if (plugin.cratesConfig.getConfigurationSection("crates").getKeys(false).contains(key)) {
+                generateRandomKey();
+            } else {
+                return key;
+            }
+        } catch (Exception e) {
+            return key;
+        }
+
+        return null;
     }
 }
 

@@ -178,14 +178,16 @@ public class InventoryClick implements Listener {
                             plugin.reloadCratesConfig();
 
                             int key = event.getRawSlot() - (plugin.getConfig().getConfigurationSection("crate.slots").getKeys(false).size());
-                            ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.location.toString() + "." + key);
+                            ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.key + "." + key);
 
-                            plugin.cratesConfig.set(crate.location.toString() + "." + key, null);
+                            plugin.cratesConfig.set(crate.key + "." + key, null);
 
                             ItemStack itemOverflow = player.getInventory().addItem(itemStack).get(0);
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
 
                             if (itemOverflow == null) {
                                 event.getInventory().getItem(event.getRawSlot()).setAmount(0);
+
                             } else {
                                 ItemMeta itemMeta = event.getInventory().getItem(event.getRawSlot()).getItemMeta();
                                 List<String> lore = itemMeta.getLore();
@@ -194,7 +196,7 @@ public class InventoryClick implements Listener {
                                 itemMeta.setLore(lore);
                                 event.getInventory().getItem(event.getRawSlot()).setItemMeta(itemMeta);
 
-                                plugin.cratesConfig.set(crate.location + "." + plugin.cratesConfig.getConfigurationSection(crate.location.toString()).getKeys(false).size(), itemOverflow);
+                                plugin.cratesConfig.set(crate.location + "." + plugin.cratesConfig.getConfigurationSection(crate.key).getKeys(false).size(), itemOverflow);
                             }
 
                             try {

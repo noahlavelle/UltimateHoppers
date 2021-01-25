@@ -35,7 +35,8 @@ public class SQLGetter {
         }
     }
 
-    public void createBlock (Location location, Player player, String type) {
+    public void createBlock (Location location, Player player, String type, String key) {
+
         try {
             PreparedStatement ps = plugin.SQL.getConnection().prepareStatement("INSERT IGNORE INTO " + plugin.getServer().getName() + " (X, Y, Z, WORLD, TYPE, UUID, P1, P2, INVENTORY, ENABLED, FILTERING) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)");
             ps.setString(1, String.valueOf(location.getBlockX()));
@@ -46,7 +47,7 @@ public class SQLGetter {
             ps.setString(6, player.getUniqueId().toString());
             ps.setString(7, String.valueOf(1));
             ps.setString(8, String.valueOf(1));
-            ps.setString(9, "");
+            ps.setString(9, key);
             ps.setString(10, String.valueOf(true));
             ps.setString(11, String.valueOf(false));
             ps.executeUpdate();
@@ -99,6 +100,7 @@ public class SQLGetter {
                     break;
                     case "crate":
                         Crate crate = new Crate(plugin, location);
+                        crate.key = resultSet.getString(9);
                         crate.createCrate();
                         plugin.crates.add(crate);
                     break;

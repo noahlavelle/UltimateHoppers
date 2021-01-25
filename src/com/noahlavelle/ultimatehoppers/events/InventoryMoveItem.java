@@ -22,24 +22,20 @@ public class InventoryMoveItem implements Listener {
     @EventHandler
     public void onInventoryMoveItem(InventoryMoveItemEvent event) throws IOException {
         Crate crate = null;
-        Player player = null;
         plugin.reloadCratesConfig();
 
-        for (Crate c : plugin.crates) {
-            if (c.chest.getInventory().equals(event.getDestination())) crate = c;
-        }
-
-        if (crate != null) {
-            if (plugin.cratesConfig.get(crate.location.toString()) == null) {
-                plugin.cratesConfig.createSection(crate.location.toString());
+            for (Crate c : plugin.crates) {
+                if (c.chest != null && c.chest.getInventory().equals(event.getDestination())) crate = c;
             }
 
+        if (crate != null) {
             Boolean addAmount = false;
             ItemStack finalItemStack = null;
             String finalKey = null;
 
-            for (String key : plugin.cratesConfig.getConfigurationSection(crate.location.toString()).getKeys(false)) {
-                ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.location + "." + key);
+            for (String key : plugin.cratesConfig.getConfigurationSection(crate.key).getKeys(false)) {
+
+                ItemStack itemStack = plugin.cratesConfig.getItemStack(crate.key + "." + key);
 
                 if (event.getItem().isSimilar(itemStack)) {
                     addAmount = true;
@@ -48,19 +44,19 @@ public class InventoryMoveItem implements Listener {
                 }
             }
 
-            int cratesSlotSize = plugin.cratesConfig.getConfigurationSection(crate.location.toString()).getKeys(false).size();
+            int cratesSlotSize = plugin.cratesConfig.getConfigurationSection(crate.key).getKeys(false).size();
             boolean isFull = cratesSlotSize == crate.inventorySize - plugin.getConfig().getConfigurationSection("crate.slots").getKeys(false).size();
-            if ((isFull && !event.getItem().isSimilar(finalItemStack)) || (isFull && plugin.cratesConfig.getItemStack(crate.location.toString() + "." + (cratesSlotSize - 1)).getAmount() == crate.storage)) {
+            if ((isFull && !event.getItem().isSimilar(finalItemStack)) || (isFull && plugin.cratesConfig.getItemStack(crate.key + "." + (cratesSlotSize - 1)).getAmount() == crate.storage)) {
                 event.setCancelled(true);
                 return;
             }
 
             if (addAmount && finalItemStack.getAmount() < crate.storage) {
                 finalItemStack.setAmount(finalItemStack.getAmount() + 1);
-                plugin.cratesConfig.set(crate.location + "." +  finalKey, finalItemStack);
+                plugin.cratesConfig.set(crate.key + "." +  finalKey, finalItemStack);
 
             } else {
-                plugin.cratesConfig.set(crate.location + "." + plugin.cratesConfig.getConfigurationSection(crate.location.toString()).getKeys(false).size(), event.getItem());
+                plugin.cratesConfig.set(crate.key + "." + plugin.cratesConfig.getConfigurationSection(crate.key).getKeys(false).size(), event.getItem());
             }
 
             plugin.cratesConfig.save(plugin.cratesConfigFile);

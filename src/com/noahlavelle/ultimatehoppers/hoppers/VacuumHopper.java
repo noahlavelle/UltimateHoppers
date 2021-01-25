@@ -50,6 +50,7 @@ public class VacuumHopper implements Listener {
         this.location = location;
         this.chunk = location.getChunk();
 
+        if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
         this.hopper = (Hopper) location.getWorld().getBlockAt(location).getState();
 
     }
@@ -60,6 +61,9 @@ public class VacuumHopper implements Listener {
         }
         task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
             if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
+
+            if (hopper.getBlock().isBlockPowered()) enabled = false;
+            else enabled = true;
 
             if (enabled && chunk.isLoaded()) {
                 location.getWorld().spawnParticle(Particle.PORTAL, new Location(location.getWorld(), location.getX() + 0.5, location.getY() + 1, location.getZ() + 0.5), 10, 0.1, 0.1, 0.1);
