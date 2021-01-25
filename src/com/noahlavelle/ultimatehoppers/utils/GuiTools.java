@@ -49,9 +49,10 @@ public class GuiTools {
         Configuration config = plugin.getConfig();
 
         Inventory inventory;
+
         String title = config.getString(path + ".title");
 
-        if (title != null) {
+        if (subTitle != null) {
             title = subTitle;
         }
 
