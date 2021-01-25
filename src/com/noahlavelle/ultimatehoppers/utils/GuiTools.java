@@ -23,7 +23,7 @@ import java.util.regex.Pattern;
 
 public class GuiTools {
 
-    public static Inventory createGui (Main plugin, String path, Player player) {
+    public static Inventory createGui (Main plugin, String path, Player player, String subTitle) {
 
 
         VacuumHopper vacuumHopper = null;
@@ -49,11 +49,16 @@ public class GuiTools {
         Configuration config = plugin.getConfig();
 
         Inventory inventory;
+        String title = config.getString(path + ".title");
+
+        if (title != null) {
+            title = subTitle;
+        }
 
         if (crate != null) {
-            inventory = Bukkit.createInventory(null, crate.inventorySize, config.getString(path + ".title"));
+            inventory = Bukkit.createInventory(null, crate.inventorySize, title);
         } else {
-            inventory = Bukkit.createInventory(null, Integer.parseInt(config.getString(path + ".size")), config.getString(path + ".title"));
+            inventory = Bukkit.createInventory(null, Integer.parseInt(config.getString(path + ".size")), title);
         }
 
         for (String key : config.getConfigurationSection(path + ".slots").getKeys(false)) {

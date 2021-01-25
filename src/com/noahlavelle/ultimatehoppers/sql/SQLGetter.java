@@ -85,7 +85,10 @@ public class SQLGetter {
 
                 switch (path) {
                     case "vacuum":
-                        VacuumHopper vh = new VacuumHopper(plugin, location);
+                    case "mob":
+                        VacuumHopper vh = new VacuumHopper(plugin, location, path);
+                        if (path.equals("mob")) path = "vacuum";
+
                         vh.delay = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".delay." + resultSet.getString(7))));
                         vh.radius = Integer.parseInt(Objects.requireNonNull(plugin.getConfig().getString(path + ".radius." + resultSet.getString(8))));
                         vh.enabled = resultSet.getBoolean(10);

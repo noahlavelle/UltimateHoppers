@@ -49,7 +49,12 @@ public class PlayerInteract implements Listener {
                         Inventory inventory;
                         if ("vacuum".equals(resultSet.getString(5))) {
                             plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
-                            inventory = GuiTools.createGui(plugin, "vacuum", player);
+                            inventory = GuiTools.createGui(plugin, "vacuum", player, null);
+                            player.openInventory(inventory);
+                            plugin.playerInventories.put(player.getUniqueId(), inventory);
+                        } else if ("mob".equals(resultSet.getString(5))) {
+                            plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
+                            inventory = GuiTools.createGui(plugin, "vacuum", player, "Mob Hopper");
                             player.openInventory(inventory);
                             plugin.playerInventories.put(player.getUniqueId(), inventory);
                         }
@@ -72,7 +77,7 @@ public class PlayerInteract implements Listener {
                     while (resultSet.next()) {
                         if ("crate".equals(resultSet.getString(5))) {
                             plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
-                            Inventory inventory = GuiTools.createGui(plugin, "crate", player);
+                            Inventory inventory = GuiTools.createGui(plugin, "crate", player, null);
                             player.updateInventory();
                             player.openInventory(inventory);
                             plugin.playerInventories.put(player.getUniqueId(), inventory);

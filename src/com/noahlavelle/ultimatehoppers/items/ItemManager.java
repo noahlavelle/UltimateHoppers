@@ -13,10 +13,12 @@ public class ItemManager {
 
     public static ItemStack vacuumHopper;
     public static ItemStack crate;
+    public static ItemStack mobHopper;
 
     public static void init() {
         createVacuumHopper();
         createCrate();
+        createMobHopper();
     }
 
     private static void createVacuumHopper() {
@@ -40,11 +42,25 @@ public class ItemManager {
         meta.setDisplayName("§3Crate");
         List<String> lore = new ArrayList<>();
         lore.add("§7Sucks up all items near it and stores them in bulk");
-        lore.add("§7Then you can just click to sell them all!");
+        lore.add("§7Then you can just click to withdraw them");
         meta.setLore(lore);
         meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
         crate = item;
+    }
+
+    private static void createMobHopper() {
+        ItemStack item = new ItemStack(Material.HOPPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName("§3Mob Hopper");
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Pulls all mobs near on top of it");
+        meta.setLore(lore);
+        meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        mobHopper = item;
     }
 }

@@ -84,6 +84,7 @@ public class InventoryClick implements Listener {
         if (plugin.playerInventories.get(player.getUniqueId()) == event.getClickedInventory()) {
             switch (event.getView().getTitle().toLowerCase()) {
                 case "vacuum hopper":
+                case "mob hopper":
                     if (event.getInventory().getItem(event.getRawSlot()) == null) {
                         VacuumHopper finalVacuumHopper = vacuumHopper;
                         Bukkit.getScheduler().runTask(plugin, () -> {

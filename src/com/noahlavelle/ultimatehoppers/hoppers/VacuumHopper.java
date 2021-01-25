@@ -1,12 +1,11 @@
 package com.noahlavelle.ultimatehoppers.hoppers;
 
 import com.noahlavelle.ultimatehoppers.Main;
-import com.sun.javafx.geom.Vec3d;
 import org.bukkit.*;
 import org.bukkit.block.Hopper;
-import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -15,7 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
-import java.util.Vector;
 
 public class VacuumHopper implements Listener {
 
@@ -37,6 +35,7 @@ public class VacuumHopper implements Listener {
     private Hopper hopper;
     private ItemStack item;
     private Chunk chunk;
+    private String type;
 
     public int delay = 8;
     public int radius = 10;
@@ -44,7 +43,8 @@ public class VacuumHopper implements Listener {
     public boolean filtering = false;
     public boolean enabled = true;
 
-    public VacuumHopper(Main plugin, Location location) {
+    public VacuumHopper(Main plugin, Location location, String type) {
+        this.type = type;
         this.plugin = plugin;
         plugin.getServer().getPluginManager().registerEvents(this, plugin);
         this.location = location;
@@ -59,32 +59,56 @@ public class VacuumHopper implements Listener {
         if (task != null) {
             task.cancel();
         }
-        task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
-            if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
 
-            if (hopper.getBlock().isBlockPowered()) enabled = false;
-            else enabled = true;
+        switch (type) {
+            case "vacuum":
+                task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+                    if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
 
-            if (enabled && chunk.isLoaded()) {
-                location.getWorld().spawnParticle(Particle.PORTAL, new Location(location.getWorld(), location.getX() + 0.5, location.getY() + 1, location.getZ() + 0.5), 10, 0.1, 0.1, 0.1);
-                for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-                    if (entity instanceof Item) {
-                        item = ((Item) entity).getItemStack();
-                        ItemStack itemAdd = new ItemStack(item.getType(), 1);
-                        itemAdd.setItemMeta(item.getItemMeta());
+                    if (hopper.getBlock().isBlockPowered()) enabled = false;
+                    else enabled = true;
 
-                        if (!filtering || filters.contains(item.getType().toString())) {
-                            for (ItemStack itemStack : hopper.getInventory()) {
-                                if (itemStack == null || (itemStack.getAmount() < itemStack.getMaxStackSize() && itemStack.getMaxStackSize() - itemStack.getAmount() >= item.getAmount() && itemStack.getType() == item.getType())) {
-                                    item.setAmount(item.getAmount() - 1);
-                                    hopper.getInventory().addItem(itemAdd);
-                                    return;
+                    if (enabled && chunk.isLoaded()) {
+                        location.getWorld().spawnParticle(Particle.PORTAL, new Location(location.getWorld(), location.getX() + 0.5, location.getY() + 1, location.getZ() + 0.5), 10, 0.1, 0.1, 0.1);
+                        for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
+                            if (entity instanceof Item) {
+                                item = ((Item) entity).getItemStack();
+                                ItemStack itemAdd = new ItemStack(item.getType(), 1);
+                                itemAdd.setItemMeta(item.getItemMeta());
+
+                                if (!filtering || filters.contains(item.getType().toString())) {
+                                    for (ItemStack itemStack : hopper.getInventory()) {
+                                        if (itemStack == null || (itemStack.getAmount() < itemStack.getMaxStackSize() && itemStack.getMaxStackSize() - itemStack.getAmount() >= item.getAmount() && itemStack.getType() == item.getType())) {
+                                            item.setAmount(item.getAmount() - 1);
+                                            hopper.getInventory().addItem(itemAdd);
+                                            return;
+                                        }
+                                    }
                                 }
                             }
                         }
                     }
-                }
-            }
-        }, 0, delay);
+                }, 0, delay);
+            break;
+            case "mob":
+                task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
+                    if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
+
+                    if (hopper.getBlock().isBlockPowered()) enabled = false;
+                    else enabled = true;
+
+                    if (enabled && chunk.isLoaded()) {
+                        location.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, new Location(location.getWorld(), location.getX() + 0.5, location.getY() + 1, location.getZ() + 0.5), 10, 1, 1, 1);
+
+                        for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
+                            if (!(entity instanceof Player) && !(entity instanceof Item)) {
+                                entity.teleport(location.clone().add(0.5, 1, 0.5));
+                            }
+                        }
+                    }
+
+                }, 0, delay * 10L);
+            break;
+        }
     }
 }
