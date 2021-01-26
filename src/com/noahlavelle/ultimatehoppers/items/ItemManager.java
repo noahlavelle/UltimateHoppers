@@ -14,11 +14,13 @@ public class ItemManager {
     public static ItemStack vacuumHopper;
     public static ItemStack crate;
     public static ItemStack mobHopper;
+    public static ItemStack filterHopper;
 
     public static void init() {
         createVacuumHopper();
         createCrate();
         createMobHopper();
+        createFilterHopper();
     }
 
     private static void createVacuumHopper() {
@@ -62,5 +64,19 @@ public class ItemManager {
         meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
         item.setItemMeta(meta);
         mobHopper = item;
+    }
+
+    private static void createFilterHopper() {
+        ItemStack item = new ItemStack(Material.HOPPER, 1);
+        ItemMeta meta = item.getItemMeta();
+        assert meta != null;
+        meta.setDisplayName("§3Filter Hopper");
+        List<String> lore = new ArrayList<>();
+        lore.add("§7Items set in the filter move down, others just pass on");
+        meta.setLore(lore);
+        meta.addEnchant(Enchantment.ARROW_INFINITE, 1, false);
+        meta.addItemFlags(ItemFlag.HIDE_ENCHANTS);
+        item.setItemMeta(meta);
+        filterHopper = item;
     }
 }

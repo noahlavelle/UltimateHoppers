@@ -43,6 +43,9 @@ public class CreateItem implements CommandExecutor {
             case "mob":
                 player.getInventory().addItem(ItemManager.mobHopper);
             break;
+            case "filter":
+                player.getInventory().addItem(ItemManager.filterHopper);
+                break;
             case "crate":
                 player.getInventory().addItem(ItemManager.crate);
             break;

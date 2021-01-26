@@ -62,6 +62,7 @@ vacuum:
       name: ""
     7:
       item: REDSTONE_BLOCK
+      alternative: WHITE_STAINED_GLASS_PANE
       name: "Filtering: Enabled"
       color: GREEN
       type: toggle
@@ -199,6 +200,191 @@ vacuum:
       name: ↑ Options ↓ Filter Items
       type: filler
       interact: none
+
+mob:
+  size: 27
+  title: Mob Hopper
+  delay: # The actual values in ticks that map to each tear of speed
+    1: 80
+    2: 60
+    3: 30
+    4: 10
+  radius: # The values for each tier of radius
+    1: 5
+    2: 10
+    3: 15
+    4: 20
+  slots: # The GUI slots
+    1:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    2:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    3:
+      item: LIME_STAINED_GLASS_PANE
+      name: "Vacuum: Enabled"
+      color: GREEN
+      type: toggle
+      interact: toggle
+      toggle_property: "enable"
+      toggle:
+        item: RED_STAINED_GLASS_PANE
+        name: "Vacuum: Disabled"
+        color: RED
+    4:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    5:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    6:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    8:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    7:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    9:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    10:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    11:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    12:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    13:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    14:
+      item: HOPPER
+      name: Info
+      color: YELLOW
+      type: info
+      interact: upgrade
+      p1: Speed
+      p2: Radius
+      info:
+        Enabled:
+          1: GREEN Yes
+          2: RED No
+        Filtered:
+          1: GREEN Yes
+          2: RED No
+        Speed:
+          1: GRAY Slow
+          2: GREEN Normal
+          3: GOLD Speedy
+          4: LIGHT_PURPLE Lightning
+        Radius:
+          1: GRAY 5
+          2: GRAY 10
+          3: GRAY 15
+          4: GRAY 20
+        Cost:
+          1: YELLOW $1000
+          2: YELLOW $4000
+          3: YELLOW $9000
+          4: YELLOW $16000
+          5: YELLOW $25000
+          6: YELLOW $36000
+          7: YELLOW $36000
+    15:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    16:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    17:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    18:
+      item: WHITE_STAINED_GLASS_PANE
+      type: filler
+      interact: none
+      name: ""
+    19:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    20:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    21:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    22:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    23:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    24:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    25:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    26:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+    27:
+      item: BLACK_STAINED_GLASS_PANE
+      name: ""
+      type: filler
+      interact: none
+
 crate:
   title: Crate
   storage:

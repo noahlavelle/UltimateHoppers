@@ -3,9 +3,7 @@ package com.noahlavelle.ultimatehoppers.hoppers;
 import com.noahlavelle.ultimatehoppers.Main;
 import org.bukkit.*;
 import org.bukkit.block.Hopper;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Item;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
@@ -14,6 +12,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
 
 public class VacuumHopper implements Listener {
 
@@ -42,6 +42,7 @@ public class VacuumHopper implements Listener {
     public ArrayList<String> filters = new ArrayList<>();
     public boolean filtering = false;
     public boolean enabled = true;
+    public ArrayList<LivingEntity> noAiMobs = new ArrayList<>();
 
     public VacuumHopper(Main plugin, Location location, String type) {
         this.type = type;
@@ -64,9 +65,6 @@ public class VacuumHopper implements Listener {
             case "vacuum":
                 task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
                     if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
-
-                    if (hopper.getBlock().isBlockPowered()) enabled = false;
-                    else enabled = true;
 
                     if (enabled && chunk.isLoaded()) {
                         location.getWorld().spawnParticle(Particle.PORTAL, new Location(location.getWorld(), location.getX() + 0.5, location.getY() + 1, location.getZ() + 0.5), 10, 0.1, 0.1, 0.1);
@@ -94,15 +92,20 @@ public class VacuumHopper implements Listener {
                 task = Bukkit.getScheduler().runTaskTimer(plugin, () -> {
                     if (location.getWorld().getBlockAt(location).getType() != Material.HOPPER) return;
 
-                    if (hopper.getBlock().isBlockPowered()) enabled = false;
-                    else enabled = true;
 
                     if (enabled && chunk.isLoaded()) {
                         location.getWorld().spawnParticle(Particle.VILLAGER_HAPPY, new Location(location.getWorld(), location.getX() + 0.5, location.getY() + 1, location.getZ() + 0.5), 10, 1, 1, 1);
 
-                        for (Entity entity : location.getWorld().getNearbyEntities(location, radius, radius, radius)) {
-                            if (!(entity instanceof Player) && !(entity instanceof Item)) {
-                                entity.teleport(location.clone().add(0.5, 1, 0.5));
+                        Collection<Entity> nearbyEntities = location.getWorld().getNearbyEntities(location, radius, radius, radius);
+
+                        for (Entity entity : nearbyEntities) {
+                            if (!(entity instanceof Player) && !(entity instanceof Item) && !(entity instanceof Arrow)) {
+                                entity.teleport(location.clone().add(0.5, 0.9, 0.5));
+                                if (!noAiMobs.contains(entity)) {
+                                    noAiMobs.add((LivingEntity) entity);
+                                }
+                                System.out.println(noAiMobs);
+                                ((LivingEntity) entity).setAI(false);
                             }
                         }
                     }

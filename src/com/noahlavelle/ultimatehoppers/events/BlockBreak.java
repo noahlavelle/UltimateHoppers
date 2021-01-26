@@ -2,12 +2,15 @@ package com.noahlavelle.ultimatehoppers.events;
 
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.Crate;
+import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import com.noahlavelle.ultimatehoppers.items.ItemManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -39,9 +42,14 @@ public class BlockBreak implements Listener {
     public void onBlockBreak(BlockBreakEvent event) {
         Player player = event.getPlayer();
         Crate crate = null;
+        VacuumHopper vacuumHopper = null;
 
         for (Crate c : plugin.crates) {
             if (c.location.equals(event.getBlock().getLocation())) crate = c;
+        }
+
+        for (VacuumHopper v : plugin.vacuumHoppers) {
+            if (v.location.equals(event.getBlock().getLocation())) vacuumHopper = v;
         }
 
         if (plugin.data.hopperLocations.contains(event.getBlock().getLocation())) {
@@ -55,6 +63,14 @@ public class BlockBreak implements Listener {
                 switch (resultSet.getString(5)) {
                     case "vacuum":
                         location.getWorld().dropItemNaturally(location, ItemManager.vacuumHopper);
+                    break;
+                    case "mob":
+                        location.getWorld().dropItemNaturally(location, ItemManager.mobHopper);
+                        for (LivingEntity entity : vacuumHopper.noAiMobs) {
+                            vacuumHopper.noAiMobs.remove(entity);
+                            entity.setAI(true);
+
+                        }
                     break;
                     case "crate":
                         if (plugin.cratesConfig.getConfigurationSection(crate.key).getKeys(false).size() != 0) {

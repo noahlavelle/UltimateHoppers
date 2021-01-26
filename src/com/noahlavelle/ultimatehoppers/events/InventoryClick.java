@@ -6,6 +6,7 @@ import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
 import com.noahlavelle.ultimatehoppers.utils.GuiTools;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.*;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -169,6 +170,9 @@ public class InventoryClick implements Listener {
                         }
 
                 break;
+                case "mob":
+                    clickedType = "mob";
+                break;
                 case "crate":
                     if (plugin.getConfig().getString("crate.slots." + (event.getRawSlot() + 1) + ".interact") == null) {
                         if (event.getInventory().getItem(event.getRawSlot()) == null) {
@@ -244,7 +248,15 @@ public class InventoryClick implements Listener {
                             switch (Objects.requireNonNull(plugin.getConfig().getString(itemClickedPath + ".toggle_property"))) {
                                 case "enable":
                                     assert vacuumHopper != null;
-                                    if (vacuumHopper.enabled) vacuumHopper.enabled = false;
+                                    if (vacuumHopper.enabled) {
+                                        vacuumHopper.enabled = false;
+
+                                        for (LivingEntity entity : vacuumHopper.noAiMobs) {
+                                            vacuumHopper.noAiMobs.remove(entity);
+                                            entity.setAI(true);
+
+                                        }
+                                    }
                                     else vacuumHopper.enabled = true;
 
                                     try {
