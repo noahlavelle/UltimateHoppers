@@ -86,6 +86,7 @@ public class InventoryClick implements Listener {
             switch (event.getView().getTitle().toLowerCase()) {
                 case "vacuum hopper":
                 case "mob hopper":
+                case "filter":
                     if (event.getInventory().getItem(event.getRawSlot()) == null) {
                         VacuumHopper finalVacuumHopper = vacuumHopper;
                         Bukkit.getScheduler().runTask(plugin, () -> {
@@ -168,7 +169,6 @@ public class InventoryClick implements Listener {
                             player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                             return;
                         }
-
                 break;
                 case "mob":
                     clickedType = "mob";
@@ -224,6 +224,9 @@ public class InventoryClick implements Listener {
 
             if (plugin.getConfig().getString(itemClickedPath + ".interact") == null) return;
             switch (Objects.requireNonNull(plugin.getConfig().getString(itemClickedPath + ".interact"))) {
+                case "unlock":
+                break;
+
                 case "toggle":
                     ItemMeta newMeta;
 

@@ -118,6 +118,15 @@ public class GuiTools {
                             break;
                     }
                     break;
+                case "unlock":
+                    switch (path) {
+                        case "filter":
+                            List<String> lore = meta.getLore() == null ? new ArrayList<>() : meta.getLore();
+                            lore.add(ChatColor.YELLOW + "Cost: " + config.getString(path + ".slots." + key + ".cost"));
+                            meta.setLore(lore);
+                        break;
+                    }
+                break;
             }
 
             item.setItemMeta(meta);
