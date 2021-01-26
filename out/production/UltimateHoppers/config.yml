@@ -385,6 +385,67 @@ mob:
       type: filler
       interact: none
 
+filter:
+  size: 9
+  title: Filter Hopper
+  slots: # The GUI slots
+    2:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 1000
+    3:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 2000
+    4:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 4000
+    5:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 9000
+    6:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 16000
+    7:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 25000
+    8:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 36000
+    9:
+      item: BARRIER
+      name: Locked Slot
+      color: RED
+      type: unlock
+      interact: unlock
+      cost: 49000
+
 crate:
   title: Crate
   storage:

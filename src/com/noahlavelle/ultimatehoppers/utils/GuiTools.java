@@ -76,6 +76,7 @@ public class GuiTools {
                 case "toggle":
                     switch (path) {
                         case "vacuum":
+                        case "mob":
                             switch (Objects.requireNonNull(config.getString(path + ".slots." + key + ".toggle_property"))) {
                                 case "enable":
                                     if (vacuumHopper.enabled) {

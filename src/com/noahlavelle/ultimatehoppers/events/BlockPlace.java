@@ -1,6 +1,7 @@
 package com.noahlavelle.ultimatehoppers.events;
 
 import com.noahlavelle.ultimatehoppers.hoppers.Crate;
+import com.noahlavelle.ultimatehoppers.hoppers.FilterHopper;
 import com.noahlavelle.ultimatehoppers.items.ItemManager;
 import com.noahlavelle.ultimatehoppers.Main;
 import com.noahlavelle.ultimatehoppers.hoppers.VacuumHopper;
@@ -22,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.Random;
+import java.util.logging.Filter;
 
 public class BlockPlace implements Listener {
 
@@ -38,6 +40,7 @@ public class BlockPlace implements Listener {
         ItemMeta vacuumMeta = ItemManager.vacuumHopper.getItemMeta();
         ItemMeta crateMeta = ItemManager.crate.getItemMeta();
         ItemMeta mobMeta = ItemManager.mobHopper.getItemMeta();
+        ItemMeta filterMeta = ItemManager.filterHopper.getItemMeta();
 
         plugin.hopperLocations.add(event.getBlock().getLocation());
 
@@ -54,6 +57,13 @@ public class BlockPlace implements Listener {
             vh.createHopper();
             plugin.vacuumHoppers.add(vh);
             plugin.data.createBlock(event.getBlock().getLocation(), player, "mob", "");
+            plugin.data.hopperLocations.add(event.getBlock().getLocation());
+        }
+
+        if (Objects.equals(player.getInventory().getItemInMainHand().getItemMeta(), filterMeta) || Objects.equals(player.getInventory().getItemInOffHand().getItemMeta(), filterMeta)) {
+            FilterHopper fh = new FilterHopper(plugin, event.getBlock().getLocation());
+            plugin.filterHoppers.add(fh);
+            plugin.data.createBlock(event.getBlock().getLocation(), player, "filter", "");
             plugin.data.hopperLocations.add(event.getBlock().getLocation());
         }
 

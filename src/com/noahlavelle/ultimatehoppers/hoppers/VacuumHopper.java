@@ -98,13 +98,17 @@ public class VacuumHopper implements Listener {
 
                         Collection<Entity> nearbyEntities = location.getWorld().getNearbyEntities(location, radius, radius, radius);
 
+                     for (Entity entity : noAiMobs) {
+                         if (!nearbyEntities.contains(entity)) noAiMobs.remove(entity);
+                     }
+
                         for (Entity entity : nearbyEntities) {
-                            if (!(entity instanceof Player) && !(entity instanceof Item) && !(entity instanceof Arrow)) {
+                            if (!(entity instanceof Player) && !(entity instanceof Item) && !(entity instanceof Arrow) && !(entity instanceof ExperienceOrb)) {
                                 entity.teleport(location.clone().add(0.5, 0.9, 0.5));
                                 if (!noAiMobs.contains(entity)) {
                                     noAiMobs.add((LivingEntity) entity);
                                 }
-                                System.out.println(noAiMobs);
+
                                 ((LivingEntity) entity).setAI(false);
                             }
                         }

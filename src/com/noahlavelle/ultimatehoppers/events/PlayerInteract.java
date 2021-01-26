@@ -57,6 +57,11 @@ public class PlayerInteract implements Listener {
                             inventory = GuiTools.createGui(plugin, "mob", player);
                             player.openInventory(inventory);
                             plugin.playerInventories.put(player.getUniqueId(), inventory);
+                        } else if ("filter".equals(resultSet.getString(5))) {
+                            plugin.playerBlockSelected.put(player.getUniqueId(), block.getLocation());
+                            inventory = GuiTools.createGui(plugin, "filter", player);
+                            player.openInventory(inventory);
+                            plugin.playerInventories.put(player.getUniqueId(), inventory);
                         }
                     }
                 } catch (SQLException e) {
